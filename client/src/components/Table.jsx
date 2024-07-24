@@ -73,8 +73,7 @@ const Table = () => {
                 className='w-full box-shadow text-center py-2 rounded-full mb-7'
             />
             <div
-                className="ag-theme-quartz w-full"
-                style={{ height: 600 }}
+                className="ag-theme-quartz w-full h-[60vh]"
             >
                 <AgGridReact
                     className='w-full'
@@ -82,6 +81,11 @@ const Table = () => {
                     columnDefs={colDefs}
                     quickFilterText={quickFilterText}
                 />
+            </div>
+            <div className='w-100 flex justify-end mt-2'>
+                <p>
+                    # of Items: {rowData.length}
+                </p>
             </div>
         </div>
     );
