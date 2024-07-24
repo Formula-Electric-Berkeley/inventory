@@ -7,7 +7,7 @@ import Landing from "./components/Landing";
 function App() {
     return (
         <BrowserRouter>
-            <Routes>
+            <Routes basename="/inventory">
                 <Route path="/" element={<Landing />}>
                 </Route>
             </Routes>
