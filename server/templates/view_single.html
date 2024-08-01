@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+  <title>FEB Inventory: Item {{item.db_id}}</title>
+</head>
+<body>
+  <p>Database ID: {{item.db_id}}</p>
+  <p>Manufacturer Part Number: {{item.mfg_part_number}}</p>
+  <p>Quantity: {{item.quantity}}</p>
+  <p>Description: {{item.description}}</p><br />
+
+  <p>Reserved: {{item.reserved}}</p>
+  <p>Working Quantity: {{item.get_working_quantity()}}</p>
+  <a href="{{view_url}}">{{view_url}}</a>
+
+{% include 'qr.html' %}
+</body>
+</html>

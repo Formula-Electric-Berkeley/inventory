@@ -1,0 +1,26 @@
+<table>
+    <tr>
+        <th>Manufacturer Part Number</th>
+        <th>Description</th>
+        <th>Effective Quantity</th>
+        <th>Reserved Quantity</th>
+        <th>Physical Quantity</th>
+        <th>Database ID</th>
+        <th>Reservers</th>
+    </tr>
+{% for item in items %}
+    <tr>
+        <td>{{item.mfg_part_number}}</td>
+        <td>{{item.description}}</td>
+        <td>{{item.get_working_quantity()}}</td>
+        <td>{{item.get_reserved_quantity()}}</td>
+        <td>{{item.quantity}}</td>
+        <td>{{item.db_id}}</td>
+        <td>
+            {% for name, rqty in item.reserved.items() %}
+                <div>{{name}}: {{rqty}}</div>
+            {% endfor %}
+        </td>
+    </tr>
+{% endfor %}
+</table>
