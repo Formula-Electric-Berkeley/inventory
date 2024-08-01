@@ -5,7 +5,6 @@ from werkzeug.exceptions import HTTPException
 import common
 import models
 from api_routes import api_blueprint
-from root_routes import root_blueprint
 
 
 def _create_table(table_name: str, key_model: models.Model):
@@ -17,11 +16,10 @@ dotenv.load_dotenv()
 app = flask.Flask(__name__)
 
 with app.app_context():
-    _create_table("users", models.BLANK_USER)
     _create_table("items", models.BLANK_ITEM)
+    _create_table("users", models.BLANK_USER)
 
 app.register_blueprint(api_blueprint)
-app.register_blueprint(root_blueprint)
 
 
 @app.teardown_appcontext

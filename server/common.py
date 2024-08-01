@@ -3,7 +3,6 @@ import re
 import flask
 import sqlite3
 
-
 DATABASE_PATH = 'inventory.db'
 
 
@@ -23,6 +22,7 @@ def get_db():
     if db is None:
         db = flask.g._database = sqlite3.connect(DATABASE_PATH)
     return db
+
 
 def is_dirty(value: str):
     return len(re.findall(r"[^\w\d\s\\\-\=\_\/\.\,]", value)) != 0
