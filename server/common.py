@@ -7,14 +7,14 @@ import sqlite3
 DATABASE_PATH = 'inventory.db'
 
 
-class FlaskForm:
+class FlaskPOSTForm:
     def __init__(self, form):
         self.form = form
 
     def get(self, key) -> str:
         value = self.form[key]
         if is_dirty(value):
-            flask.abort(400)
+            flask.abort(400, f"{key} was malformed")
         return value
 
 

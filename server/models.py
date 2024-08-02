@@ -37,5 +37,15 @@ class User(Model):
         self.authmask = int(authmask)
 
 
+class Reservation(Model):
+    def __init__(self, reservation_id: str, user_id: str, item_id: str, quantity: str):
+        super().__init__()
+        self.reservation_id = reservation_id
+        self.user_id = user_id
+        self.item_id = item_id
+        self.quantity = int(quantity)
+
+
 BLANK_ITEM = Item(*[str('0')]*9)
 BLANK_USER = User(*[str('0')]*4)
+BLANK_RESERVATION = Reservation(*[str('0')]*4)
