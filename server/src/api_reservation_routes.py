@@ -4,7 +4,7 @@ import auth
 import common
 
 
-api_reservation_blueprint = flask.Blueprint('api/reservation', __name__)
+api_reservation_blueprint = flask.Blueprint('api_reservation', __name__)
 
 
 @api_reservation_blueprint.route('/api/reservation/get/<item_id>', methods=['GET'])

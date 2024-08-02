@@ -8,7 +8,7 @@ import models
 import common
 
 
-api_user_blueprint = flask.Blueprint('api/user', __name__)
+api_user_blueprint = flask.Blueprint('api_user', __name__)
 
 
 @api_user_blueprint.route('/api/user/get/<user_id>', methods=['GET'])

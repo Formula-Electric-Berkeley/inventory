@@ -30,6 +30,7 @@ def route_requires_auth(scope):
         def execute():
             require_auth(scope, flask.request.form['api_key'])
             return route()
+        execute.__name__ = route.__name__
         return execute
     return for_route
 

@@ -1,10 +1,11 @@
+import os
 import re
 import time
 
 import flask
 import sqlite3
 
-DATABASE_PATH = 'inventory.db'
+DATABASE_PATH = os.path.abspath('inventory.db')
 
 
 class FlaskPOSTForm:

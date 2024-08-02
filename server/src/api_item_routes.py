@@ -7,11 +7,17 @@ import models
 import common
 
 
-api_item_blueprint = flask.Blueprint('api/item', __name__)
+api_item_blueprint = flask.Blueprint('api_item', __name__)
 
 
 @api_item_blueprint.route('/api/item/get/<item_id>', methods=['GET'])
 def api_item_get(item_id):
+    """
+    describe something here
+
+    :param item_id: test
+    :return: test2
+    """
     # Do not require authentication for item retrieve if item ID is known
     if common.is_dirty(item_id):
         flask.abort(400, "Item ID was malformed")
