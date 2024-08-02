@@ -1,6 +1,5 @@
 import json
 import secrets
-import time
 import uuid
 
 import flask
@@ -14,14 +13,18 @@ api_blueprint = flask.Blueprint('api', __name__)
 
 
 @api_blueprint.route('/api/item/get/<item_id>', methods=['GET'])
-def api_item_get(item_id: str):
+def api_item_get(item_id):
     if common.is_dirty(item_id):
         flask.abort(400)
-    res = common.get_db().cursor().execute(f"SELECT * FROM items WHERE item_id='{item_id}'")
+    conn = common.get_db_connection()
+    cursor = conn.cursor()
+    res = cursor.execute(f"SELECT * FROM items WHERE item_id='{item_id}'")
     db_item = res.fetchone()
     if db_item is None or len(db_item) == 0:
         flask.abort(404)
     item = models.Item(*db_item)
+    cursor.close()
+    conn.close()
     return item.to_dict()
 
 
@@ -30,8 +33,10 @@ def api_item_create():
     form = common.FlaskForm(flask.request.form)
     auth.require_auth(auth.Scope.ITEM_CREATE, form.get('api_key'))
 
-    db = common.get_db()
-    user_res = db.cursor().execute(f"SELECT user_id FROM users WHERE api_key='{form.get('api_key')}'")
+    conn = common.get_db_connection_connection()
+    cursor = conn.cursor()
+
+    user_res = cursor.execute(f"SELECT user_id FROM users WHERE api_key='{form.get('api_key')}'")
     db_user = user_res.fetchone()
     if db_user is None or len(db_user) == 0:
         flask.abort(404)
@@ -45,12 +50,13 @@ def api_item_create():
         digikey_part_number=form.get('digikey_part_number'),
         mouser_part_number=form.get('mouser_part_number'),
         jlcpcb_part_number=form.get('jlcpcb_part_number'),
-        reserved={},
         created_by=user_id,
-        created_epoch_millis=int(time.time_ns() * 1e-6)
+        created_epoch_millis=common.time_ms()
     )
-    db.cursor().execute(f"INSERT INTO items VALUES ({item.to_insert_str()})")
-    db.commit()
+    cursor.execute(f"INSERT INTO items VALUES ({item.to_insert_str()})")
+    cursor.close()
+    conn.commit()
+    conn.close()
     return item.to_dict()
 
 
@@ -71,7 +77,7 @@ def api_item_remove():
 
 
 @api_blueprint.route('/api/reservation/get/<item_id>', methods=['GET'])
-def api_reservation_get(item_id: str):
+def api_reservation_get(item_id):
     if common.is_dirty(item_id):
         flask.abort(400)
     # TODO implement
@@ -87,14 +93,15 @@ def api_reservation_create():
     item_id = form.get('item_id')
     quantity = int(form.get('quantity'))
 
-    db = common.get_db()
-    user_res = common.get_db().cursor().execute(f"SELECT user_id FROM users WHERE api_key='{api_key}'")
+    conn = common.get_db_connection()
+    cursor = conn.cursor()
+    user_res = cursor.execute(f"SELECT user_id FROM users WHERE api_key='{api_key}'")
     db_userid = user_res.fetchone()
     if db_userid is None or len(db_userid) != 1:
         flask.abort(404)
     user_id = db_userid[0]
 
-    item_res = db.cursor().execute(f"SELECT reserved FROM items WHERE item_id='{item_id}'")
+    item_res = cursor.execute(f"SELECT reserved FROM items WHERE item_id='{item_id}'")
     db_item = item_res.fetchone()
     if db_item is None or len(db_item) != 1:
         flask.abort(404)
@@ -105,9 +112,10 @@ def api_reservation_create():
     else:
         reserved[user_id] = quantity
 
-    db.cursor().execute(f"UPDATE items SET reserved='{json.dumps(reserved)}' WHERE item_id='{item_id}'")
-    db.commit()
-
+    cursor.execute(f"UPDATE items SET reserved='{json.dumps(reserved)}' WHERE item_id='{item_id}'")
+    conn.commit()
+    cursor.close()
+    conn.close()
     return reserved
 
 
@@ -129,7 +137,7 @@ def api_reservation_remove():
 
 @api_blueprint.route('/api/items/list', methods=['GET'])
 def api_items_list():
-    res = common.get_db().cursor().execute("SELECT * FROM items")
+    res = common.get_db_connection().cursor().execute("SELECT * FROM items")
     db_items = res.fetchall()
     items = [models.Item(*db_item) for db_item in db_items]
     return [item.to_dict() for item in items]
@@ -144,12 +152,16 @@ def api_items_bulkadd():
 
 
 @api_blueprint.route('/api/user/get/<user_id>', methods=['GET'])
-def api_user_get(user_id: str):
+def api_user_get(user_id):
     if common.is_dirty(user_id):
         flask.abort(400)
-    res = common.get_db().cursor().execute(f"SELECT * FROM users WHERE item_id='{user_id}'")
+    conn = common.get_db_connection()
+    cursor = conn.cursor()
+    res = cursor.execute(f"SELECT * FROM users WHERE item_id='{user_id}'")
     db_user = res.fetchone()
     user = models.User(*db_user)
+    cursor.close()
+    conn.close()
     return user.to_dict()
 
 
@@ -164,9 +176,12 @@ def api_user_create():
         name=form.get('name'),
         authmask=form.get('authmask')
     )
-    db = common.get_db()
-    db.cursor().execute(f"INSERT INTO users VALUES ({user.to_insert_str()})")
-    db.commit()
+    conn = common.get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(f"INSERT INTO users VALUES ({user.to_insert_str()})")
+    conn.commit()
+    cursor.close()
+    conn.close()
     return user.to_dict()
 
 
