@@ -44,7 +44,7 @@ def require_auth(req_authmask: Scope, api_key: str) -> None:
 
     conn = common.get_db_connection()
     cursor = conn.cursor()
-    res = cursor.execute(f"SELECT authmask FROM users WHERE api_key='{api_key}'")
+    res = cursor.execute(f"SELECT authmask FROM {common.USERS_TABLE_NAME} WHERE api_key='{api_key}'")
     db_authmask = res.fetchone()
 
     if db_authmask is None or len(db_authmask) != 1:

@@ -23,7 +23,7 @@ def api_user_get(user_id):
     res = cursor.execute(f"SELECT * FROM users WHERE item_id='{user_id}'")
     db_user = res.fetchone()
     user = models.User(*db_user)
-    return user.to_dict()
+    return user.to_response()
 
 
 @api_user_blueprint.route('/api/user/create', methods=['POST'])
@@ -41,7 +41,7 @@ def api_user_create():
     cursor = conn.cursor()
     cursor.execute(f"INSERT INTO users VALUES ({user.to_insert_str()})")
     conn.commit()
-    return user.to_dict()
+    return user.to_response()
 
 
 @api_user_blueprint.route('/api/user/update', methods=['POST'])
