@@ -1,11 +1,10 @@
 import secrets
 import uuid
 
-import flask
-
 import auth
-import models
 import common
+import flask
+import models
 
 
 api_user_blueprint = flask.Blueprint('api_user', __name__)
@@ -17,7 +16,7 @@ def api_user_get(user_id):
     auth.require_auth(auth.Scope.USER_CREATE, form.get('api_key'))
 
     if common.is_dirty(user_id):
-        flask.abort(400, "User ID was malformed")
+        flask.abort(400, 'User ID was malformed')
     conn = common.get_db_connection()
     cursor = conn.cursor()
     res = cursor.execute(f"SELECT * FROM users WHERE item_id='{user_id}'")
@@ -35,11 +34,11 @@ def api_user_create():
         user_id=uuid.uuid4().hex,
         api_key=secrets.token_hex(),
         name=form.get('name'),
-        authmask=form.get('authmask')
+        authmask=form.get('authmask'),
     )
     conn = common.get_db_connection()
     cursor = conn.cursor()
-    cursor.execute(f"INSERT INTO users VALUES ({user.to_insert_str()})")
+    cursor.execute(f'INSERT INTO users VALUES ({user.to_insert_str()})')
     conn.commit()
     return user.to_response()
 

@@ -1,8 +1,7 @@
-import flask
-
 import auth
-import models
 import common
+import flask
+import models
 
 api_item_blueprint = flask.Blueprint('api_item', __name__)
 
@@ -18,7 +17,7 @@ def api_item_get(item_id):
     """
     # Do not require authentication for item retrieve if item ID is known
     if common.is_dirty(item_id):
-        flask.abort(400, "Item ID was malformed")
+        flask.abort(400, 'Item ID was malformed')
     conn = common.get_db_connection()
     cursor = conn.cursor()
     res = cursor.execute(f"SELECT * FROM {common.ITEMS_TABLE_NAME} WHERE item_id='{item_id}'")
@@ -53,9 +52,9 @@ def api_item_create():
         mouser_part_number=form.get('mouser_part_number'),
         jlcpcb_part_number=form.get('jlcpcb_part_number'),
         created_by=user_id,
-        created_epoch_millis=common.time_ms()
+        created_epoch_millis=common.time_ms(),
     )
-    cursor.execute(f"INSERT INTO items VALUES ({item.to_insert_str()})")
+    cursor.execute(f'INSERT INTO items VALUES ({item.to_insert_str()})')
     conn.commit()
     return item.to_response()
 
@@ -77,7 +76,7 @@ def api_item_update():
         flask.abort(404, 'Item does not exist')
 
     item_property_names = models.BLANK_ITEM.to_dict().keys()
-    cursor.execute(f"UPDATE {common.ITEMS_TABLE_NAME} SET ?=?")
+    cursor.execute(f'UPDATE {common.ITEMS_TABLE_NAME} SET ?=?', item_property_names)
 
     return 'hello world'
 
@@ -100,7 +99,7 @@ def api_items_list():
     # TODO make this not display EVERYTHING or at least do some rate limiting
     conn = common.get_db_connection()
     cursor = conn.cursor()
-    res = cursor.execute("SELECT * FROM {common.ITEMS_TABLE_NAME}")
+    res = cursor.execute('SELECT * FROM {common.ITEMS_TABLE_NAME}')
     db_items = res.fetchall()
     items = [models.Item(*db_item) for db_item in db_items]
     return common.create_response(200, [item.to_dict() for item in items])

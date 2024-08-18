@@ -1,7 +1,6 @@
-import flask
-
 import auth
 import common
+import flask
 
 
 api_reservation_blueprint = flask.Blueprint('api_reservation', __name__)

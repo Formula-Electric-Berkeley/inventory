@@ -1,11 +1,11 @@
 import os
 import re
+import sqlite3
 import time
 import typing
 import uuid
 
 import flask
-import sqlite3
 
 DATABASE_PATH = os.path.abspath('inventory.db')
 ITEMS_TABLE_NAME = 'items'
@@ -19,10 +19,10 @@ class FlaskPOSTForm:
 
     def get(self, key) -> str:
         if key not in self.form:
-            flask.abort(400, f"{key} was not found in request")
+            flask.abort(400, f'{key} was not found in request')
         value = self.form[key]
         if is_dirty(value):
-            flask.abort(400, f"{key} was malformed")
+            flask.abort(400, f'{key} was malformed')
         return value
 
 
@@ -34,7 +34,7 @@ def get_db_connection():
 
 
 def is_dirty(value: str):
-    return len(re.findall(r"[^\w\d\s\\\-\=\_\/\.\,]", value)) != 0
+    return len(re.findall(r'[^\w\d\s\\\-\=\_\/\.\,]', value)) != 0
 
 
 def time_ms() -> int:
@@ -49,6 +49,6 @@ def create_response(code: int, body: typing.Union[list[dict], dict]) -> dict:
     if not isinstance(body, list):
         body = [body]
     return {
-        "code": code,
-        "body": body
+        'code': code,
+        'body': body,
     }

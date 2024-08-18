@@ -1,16 +1,15 @@
+import common
 import dotenv
 import flask
-from werkzeug.exceptions import HTTPException
-
-import common
 import models
 from api_item_routes import api_item_blueprint
-from api_user_routes import api_user_blueprint
 from api_reservation_routes import api_reservation_blueprint
+from api_user_routes import api_user_blueprint
+from werkzeug.exceptions import HTTPException
 
 
 def _create_table(table_name: str, key_model: models.Model):
-    table_keys = ", ".join([f"{k} TEXT" for k in key_model.to_response().keys()])
+    table_keys = ', '.join([f'{k} TEXT' for k in key_model.to_response().keys()])
     conn = common.get_db_connection()
     cursor = conn.cursor()
     cursor.execute(f'CREATE TABLE IF NOT EXISTS {table_name}({table_keys})').close()
@@ -42,12 +41,14 @@ def handle_exception(e):
     # Start with the correct headers and status code from the error
     response = e.get_response()
     # Replace the body with JSON
-    response.data = flask.json.dumps(common.create_response(
-        e.code,
-        {
-            "name": e.name,
-            "description": e.description,
-        }
-    ))
-    response.content_type = "application/json"
+    response.data = flask.json.dumps(
+        common.create_response(
+            e.code,
+            {
+                'name': e.name,
+                'description': e.description,
+            },
+        ),
+    )
+    response.content_type = 'application/json'
     return response

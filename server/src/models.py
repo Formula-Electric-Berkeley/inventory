@@ -1,6 +1,7 @@
-import common
+from typing import Any
+from typing import Union
 
-from typing import Union, Any
+import common
 
 
 class Model:
@@ -12,16 +13,18 @@ class Model:
 
     def to_insert_str(self) -> str:
         model_values = [f"'{v}'" for v in self.to_dict().values()]
-        return ", ".join(model_values)
+        return ', '.join(model_values)
 
     def __str__(self) -> str:
         return self.to_insert_str()
 
 
 class Item(Model):
-    def __init__(self, item_id: str, mfg_part_number: str, quantity: Union[int, str],
-                 description: str, digikey_part_number: str, mouser_part_number: str, jlcpcb_part_number,
-                 created_by: str, created_epoch_millis: Union[int, str]):
+    def __init__(
+        self, item_id: str, mfg_part_number: str, quantity: Union[int, str],
+        description: str, digikey_part_number: str, mouser_part_number: str, jlcpcb_part_number,
+        created_by: str, created_epoch_millis: Union[int, str],
+    ):
         super().__init__()
         self.item_id = item_id
         self.mfg_part_number = mfg_part_number

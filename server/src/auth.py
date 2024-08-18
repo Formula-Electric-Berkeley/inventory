@@ -1,8 +1,7 @@
 import enum
 
-import flask
-
 import common
+import flask
 
 
 # Evaluates to powers of two, ascending with ordinal
@@ -40,7 +39,7 @@ def require_auth(req_authmask: Scope, api_key: str) -> None:
         req_authmask = req_authmask.value
 
     if common.is_dirty(api_key):
-        flask.abort(400, "API key was malformed")
+        flask.abort(400, 'API key was malformed')
 
     conn = common.get_db_connection()
     cursor = conn.cursor()
@@ -48,10 +47,10 @@ def require_auth(req_authmask: Scope, api_key: str) -> None:
     db_authmask = res.fetchone()
 
     if db_authmask is None or len(db_authmask) != 1:
-        flask.abort(401, "User was not found")
+        flask.abort(401, 'User was not found')
     try:
         authmask = int(db_authmask[0])
         if (req_authmask & authmask) != req_authmask:
-            flask.abort(403, "User was not authorized to access this resource")
+            flask.abort(403, 'User was not authorized to access this resource')
     except ValueError:
-        flask.abort(500, "Error while determining user permissions")
+        flask.abort(500, 'Error while determining user permissions')
