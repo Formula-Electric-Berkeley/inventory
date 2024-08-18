@@ -49,6 +49,7 @@ def handle_exception(e):
                 'description': e.description,
             },
         ),
+        indent=4,
     )
     response.content_type = 'application/json'
     return response

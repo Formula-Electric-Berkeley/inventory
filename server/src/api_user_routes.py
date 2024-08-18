@@ -19,7 +19,7 @@ def api_user_get(user_id):
         flask.abort(400, 'User ID was malformed')
     conn = common.get_db_connection()
     cursor = conn.cursor()
-    res = cursor.execute(f"SELECT * FROM users WHERE item_id='{user_id}'")
+    res = cursor.execute(f'SELECT * FROM {common.USERS_TABLE_NAME} WHERE item_id=?', (user_id,))
     db_user = res.fetchone()
     user = models.User(*db_user)
     return user.to_response()
@@ -38,7 +38,7 @@ def api_user_create():
     )
     conn = common.get_db_connection()
     cursor = conn.cursor()
-    cursor.execute(f'INSERT INTO users VALUES ({user.to_insert_str()})')
+    cursor.execute('INSERT INTO users VALUES (?)', (user.to_insert_str(),))
     conn.commit()
     return user.to_response()
 

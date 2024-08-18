@@ -39,6 +39,7 @@ class Item(Model):
 
 class User(Model):
     def __init__(self, user_id: str, api_key: str, name: str, authmask: str):
+        super().__init__()
         self.user_id = user_id
         self.api_key = api_key
         self.name = name
