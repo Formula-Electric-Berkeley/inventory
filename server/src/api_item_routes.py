@@ -1,3 +1,13 @@
+"""
+The Item API can create, get, update, remove, and list inventory item(s).
+
+All routes except item retrieval require authentication, which is handled by :py:mod:`auth`.
+Idempotent routes use the ``GET`` method while non-idempotent routes use ``POST``.
+
+Base Item API endpoint:
+    * ``/api/item/`` when the response contains zero or one :py:class:`models.Item`
+    * ``/api/items/`` when the response contains two or more :py:class:`models.Item`s
+"""
 import auth
 import common
 import flask
@@ -13,9 +23,9 @@ def api_item_get_static(item_id):
 
         GET /api/item/get/<item_id>
 
-    :return: 200 on success with :py:class:`models.Item`,\n
-             400 if item ID was malformed,\n
-             404 if item was not found
+    :return: ``200`` on success with :py:class:`models.Item`,\n
+             ``400`` if item ID was malformed,\n
+             ``404`` if item was not found
     """
     return _process_get_request(item_id)
 
@@ -28,10 +38,10 @@ def api_item_get_dynamic():
         GET /api/item/get?item_id=<item_id>
         POST /api/item/get [<item_id>]
 
-    :return: 200 on success with :py:class:`models.Item`,\n
-             400 if item ID was not found,\n
-             400 if item ID was malformed,\n
-             404 if item was not found
+    :return: ``200`` on success with the desired :py:class:`models.Item`,\n
+             ``400`` if item ID was not found,\n
+             ``400`` if item ID was malformed,\n
+             ``404`` if item was not found
     """
     # If GET use query parameters, else if POST use form data
     request_parameters = flask.request.form if flask.request.method == 'POST' else flask.request.args
@@ -58,12 +68,31 @@ def _process_get_request(item_id):
 @auth.route_requires_auth(auth.Scope.ITEM_CREATE)
 def api_item_create():
     """
-    Create an inventory item with given parameters.
+    Create an inventory item with provided attributes. ::
 
-    Requires :py:attr:`auth.Scopes.ITEM_CREATE`
-    :return:
+        POST /api/item/create [*<item_attributes>, <api_key>]
+
+    All item attributes are required as listed:
+
+        * ``mfg_part_number: str``
+        * ``quantity: int``
+        * ``description: str``
+        * ``digikey_part_number: str``
+        * ``mouser_part_number: str``
+        * ``jlcpcb_part_number: str``
+
+    Item ID will be generated programmatically and returned in the success model.
+
+    Requires authentication scope :py:attr:`auth.Scope.ITEM_CREATE`
+
+    :return: ``200`` on success with the created :py:class:`models.Item`,\n
+             ``400`` if API key was malformed,\n
+             ``401`` if API key was invalid,\n
+             ``403`` if user does not have required scope,\n
+             ``404`` if user was not found,\n
+             ``404`` if any item parameter was malformed,\n
+             ``500`` if any other error while authenticating
     """
-    # TODO description
     form = common.FlaskPOSTForm(flask.request.form)
 
     conn = common.get_db_connection()
@@ -94,7 +123,35 @@ def api_item_create():
 @api_item_blueprint.route('/api/item/update', methods=['POST'])
 @auth.route_requires_auth(auth.Scope.ITEM_UPDATE)
 def api_item_update():
-    # TODO description
+    """
+    Update one or more attributes on a single inventory item, identified by item ID. ::
+
+        POST /api/item/update [*<item_attributes>, <item_id>, <api_key>]
+
+    Available attributes to update/modify are:
+
+        * ``mfg_part_number: str``
+        * ``quantity: int``
+        * ``description: str``
+        * ``digikey_part_number: str``
+        * ``mouser_part_number: str``
+        * ``jlcpcb_part_number: str``
+
+    At least one attribute must be updated, though updating more than one is supported.
+    Item IDs and creation user/time cannot be updated. Items must be removed and re-created to change these attributes.
+
+    Requires authentication scope :py:attr:`auth.Scope.ITEM_UPDATE`
+
+    :return: ``200`` on success with the updated :py:class:`models.Item`,\n
+             ``400`` if no attributes to update were provided,\n
+             ``400`` if item ID was malformed,\n
+             ``400`` if API key was malformed,\n
+             ``401`` if API key was invalid,\n
+             ``403`` if user does not have required scope,\n
+             ``404`` if item was not found,\n
+             ``500`` if any other error while authenticating
+    """
+    # TODO this route should return the updated item
     form = common.FlaskPOSTForm(flask.request.form)
 
     conn = common.get_db_connection()
@@ -128,7 +185,22 @@ def api_item_update():
 @api_item_blueprint.route('/api/item/remove', methods=['POST'])
 @auth.route_requires_auth(auth.Scope.ITEM_REMOVE)
 def api_item_remove():
-    # TODO description
+    """
+    Remove a single inventory item, identified by item ID. ::
+
+        POST /api/item/remove [<item_id>, <api_key>]
+
+    Requires authentication scope :py:attr:`auth.Scope.ITEM_REMOVE`
+
+    :return: ``200`` on success with the removed :py:class:`models.Item`,\n
+             ``400`` if item ID was malformed,\n
+             ``400`` if API key was malformed,\n
+             ``401`` if API key was invalid,\n
+             ``403`` if user does not have required scope,\n
+             ``404`` if item was not found,\n
+             ``500`` if any other error while authenticating
+    """
+    # TODO this route should return the deleted item
     form = common.FlaskPOSTForm(flask.request.form)
 
     conn = common.get_db_connection()
@@ -148,13 +220,42 @@ def api_item_remove():
 
 @api_item_blueprint.route('/api/items/list', methods=['GET', 'POST'])
 def api_items_list():
-    # TODO description
+    """
+    List one or more inventory items with optional ordering. ::
+
+        GET /api/item/list?sortby={*<item_attributes>}&direction={ASC,DESC}&limit=<limit>
+        POST /api/item/list [sortby={*<item_attributes>}, <direction={ASC,DESC}>, <limit>]
+
+    Available (all optional) parameters:
+
+        * ``sortby``: the name of any attribute in :py:class:`models.Item` (as a string).\
+                Results will then be sorted based based on this column. No sorting by default.
+        * ``direction``: either ``ASC`` to sort the results in ascending order\
+                or ``DESC`` to sort the results in descending order. ``ASC`` by default.
+        * ``limit``: the (maximum) number of returned items. :py:data:`common.RET_ITEMS_LIMIT` at maximum (default).
+
+    :return: ``200`` on success with a list of :py:class:`models.Item`s,\n
+             ``400`` if any sorting attributes were malformed,\n
+             ``400`` if ``sortby`` is present and is not a valid sort key,\n
+             ``400`` if ``direction`` is not ``ASC`` or ``DESC``,\n
+             ``400`` if ``limit`` is not an integer (digit string)
+    """
     # TODO make this not display EVERYTHING or at least do some rate limiting
+    # TODO add a search functionality option to this too
     conn = common.get_db_connection()
     cursor = conn.cursor()
 
     # If GET use query parameters, else if POST use form data
     request_parameters = flask.request.form if flask.request.method == 'POST' else flask.request.args
+
+    limit = common.RET_ITEMS_LIMIT
+    if 'limit' in request_parameters:
+        limit_raw = request_parameters.get('sortby')
+        if common.is_dirty(limit_raw):
+            flask.abort(400, 'limit is malformed')
+        if not limit_raw.isdigit():
+            flask.abort(400, f'{limit_raw} is not a valid integer limit')
+        limit = int(limit_raw)
 
     if 'sortby' in request_parameters:
         direction = request_parameters.get('direction', default='ASC').upper()
@@ -167,10 +268,10 @@ def api_items_list():
         if sortby not in models.BLANK_ITEM.to_dict().keys():
             flask.abort(400, f'{sortby} is not a valid sort key')
 
-        query = f'SELECT * FROM {common.ITEMS_TABLE_NAME} ORDER BY {sortby} {direction}'
+        query = f'SELECT * FROM {common.ITEMS_TABLE_NAME} ORDER BY {sortby} {direction} LIMIT {limit}'
         res = cursor.execute(query)
     else:
-        res = cursor.execute(f'SELECT * FROM {common.ITEMS_TABLE_NAME}')
+        res = cursor.execute(f'SELECT * FROM {common.ITEMS_TABLE_NAME} LIMIT {limit}')
     db_items = res.fetchall()
 
     items = [models.Item(*db_item) for db_item in db_items]

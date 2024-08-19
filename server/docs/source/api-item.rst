@@ -2,5 +2,6 @@ Item API
 ========
 
 .. automodule:: api_item_routes
-    :members: api_item_create, api_item_get_static
+    :members:
     :undoc-members:
+    :member-order: bysource

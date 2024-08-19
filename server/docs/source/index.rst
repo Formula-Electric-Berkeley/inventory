@@ -14,3 +14,4 @@ FEB Inventory API Documentation
    api-item
    api-user
    api-reservation
+   misc

@@ -1,13 +1,22 @@
 import enum
+from functools import wraps
 
 import common
 import flask
 
 
-# Evaluates to powers of two, ascending with ordinal
-# See: https://docs.python.org/3/library/enum.html#enum.auto
-# See: https://docs.python.org/3/library/enum.html#enum.IntFlag
 class Scope(enum.IntFlag):
+    """
+    Authentication scopes required for each API route.
+
+    Each user stores an ``authmask`` composite of scopes such that they may access
+    any combination of API routes and access may be modified after user creation.
+
+    Each enum int flag value evaluates to powers of two, ascending with ordinal.
+
+        * See: https://docs.python.org/3/library/enum.html#enum.auto
+        * See: https://docs.python.org/3/library/enum.html#enum.IntFlag
+    """
     ITEM_GET = enum.auto()
     ITEM_CREATE = enum.auto()
     ITEM_UPDATE = enum.auto()
@@ -25,12 +34,15 @@ class Scope(enum.IntFlag):
 
 def route_requires_auth(scope):
     def for_route(route):
+        @wraps(route)
         def execute():
             require_auth(scope, flask.request.form.get('api_key'))
             return route()
+
         execute.__name__ = route.__name__
         execute.__doc__ = route.__doc__
         return execute
+
     return for_route
 
 
