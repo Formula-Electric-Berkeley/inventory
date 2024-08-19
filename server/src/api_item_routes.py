@@ -8,19 +8,31 @@ api_item_blueprint = flask.Blueprint('api_item', __name__)
 
 @api_item_blueprint.route('/api/item/get/<item_id>', methods=['GET'])
 def api_item_get_static(item_id):
-    # TODO description
     """
-    describe something here
+    Get a single inventory item by item ID. Route forms a permalink (static) URL. ::
 
-    :param item_id: test
-    :return: test2
+        GET /api/item/get/<item_id>
+
+    :return: 200 on success with :py:class:`models.Item`,\n
+             400 if item ID was malformed,\n
+             404 if item was not found
     """
     return _process_get_request(item_id)
 
 
 @api_item_blueprint.route('/api/item/get', methods=['GET', 'POST'])
 def api_item_get_dynamic():
-    # TODO description
+    """
+    Get a single inventory item by item ID. Route URL is mutable by item ID (dynamic). ::
+
+        GET /api/item/get?item_id=<item_id>
+        POST /api/item/get [<item_id>]
+
+    :return: 200 on success with :py:class:`models.Item`,\n
+             400 if item ID was not found,\n
+             400 if item ID was malformed,\n
+             404 if item was not found
+    """
     # If GET use query parameters, else if POST use form data
     request_parameters = flask.request.form if flask.request.method == 'POST' else flask.request.args
     if 'item_id' not in request_parameters:
@@ -45,6 +57,12 @@ def _process_get_request(item_id):
 @api_item_blueprint.route('/api/item/create', methods=['POST'])
 @auth.route_requires_auth(auth.Scope.ITEM_CREATE)
 def api_item_create():
+    """
+    Create an inventory item with given parameters.
+
+    Requires :py:attr:`auth.Scopes.ITEM_CREATE`
+    :return:
+    """
     # TODO description
     form = common.FlaskPOSTForm(flask.request.form)
 
@@ -60,7 +78,7 @@ def api_item_create():
     item = models.Item(
         item_id=common.create_random_id(length=8),
         mfg_part_number=form.get('mfg_part_number'),
-        quantity=form.get('quantity'),
+        quantity=form.get('quantity', int),
         description=form.get('description'),
         digikey_part_number=form.get('digikey_part_number'),
         mouser_part_number=form.get('mouser_part_number'),
@@ -90,17 +108,18 @@ def api_item_update():
         flask.abort(404, 'Item does not exist')
 
     # TODO have a better solution for mutability
-    item_property_keys = list(models.BLANK_ITEM.to_dict().keys())
-    item_property_keys.remove('item_id')
-    item_property_keys.remove('created_by')
-    item_property_keys.remove('created_epoch_millis')
+    item_properties = models.BLANK_ITEM.to_dict()
+    item_properties.pop('item_id')
+    item_properties.pop('created_by')
+    item_properties.pop('created_epoch_millis')
 
-    keys_to_update = tuple(filter(lambda k: k in form.form, item_property_keys))
-    if len(keys_to_update) <= 0:
+    properties_to_update = {k: v for k, v in item_properties.items() if k in form.form}
+    if len(properties_to_update) <= 0:
         flask.abort(400, 'No attributes to be updated were provided')
 
-    for key in keys_to_update:
-        cursor.execute(f'UPDATE {common.ITEMS_TABLE_NAME} SET {key}=? WHERE item_id=?', (form.get(key), item_id))
+    for key, value in properties_to_update.items():
+        query_params = (form.get(key, type(value)), item_id)
+        cursor.execute(f'UPDATE {common.ITEMS_TABLE_NAME} SET {key}=? WHERE item_id=?', query_params)
     conn.commit()
 
     return common.create_response(200, {})

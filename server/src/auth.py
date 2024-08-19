@@ -17,7 +17,6 @@ class Scope(enum.IntFlag):
     RESERVATION_UPDATE = enum.auto()
     RESERVATION_REMOVE = enum.auto()
     ITEMS_LIST = enum.auto()
-    ITEMS_BULKADD = enum.auto()
     USER_GET = enum.auto()
     USER_CREATE = enum.auto()
     USER_UPDATE = enum.auto()
@@ -27,9 +26,10 @@ class Scope(enum.IntFlag):
 def route_requires_auth(scope):
     def for_route(route):
         def execute():
-            require_auth(scope, flask.request.form['api_key'])
+            require_auth(scope, flask.request.form.get('api_key'))
             return route()
         execute.__name__ = route.__name__
+        execute.__doc__ = route.__doc__
         return execute
     return for_route
 
@@ -43,7 +43,7 @@ def require_auth(req_authmask: Scope, api_key: str) -> None:
 
     conn = common.get_db_connection()
     cursor = conn.cursor()
-    res = cursor.execute(f"SELECT authmask FROM {common.USERS_TABLE_NAME} WHERE api_key='{api_key}'")
+    res = cursor.execute(f'SELECT authmask FROM {common.USERS_TABLE_NAME} WHERE api_key=?', (api_key,))
     db_authmask = res.fetchone()
 
     if db_authmask is None or len(db_authmask) != 1:

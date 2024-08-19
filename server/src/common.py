@@ -4,6 +4,7 @@ import sqlite3
 import time
 import typing
 import uuid
+from typing import Union
 
 import flask
 
@@ -11,18 +12,21 @@ DATABASE_PATH = os.path.abspath('inventory.db')
 ITEMS_TABLE_NAME = 'items'
 USERS_TABLE_NAME = 'users'
 RESERVATIONS_TABLE_NAME = 'reservations'
+SEARCH_NUM_ITEMS_LIMIT = 200
 
 
 class FlaskPOSTForm:
     def __init__(self, form):
         self.form = form
 
-    def get(self, key) -> str:
+    def get(self, key, expected_type: typing.Type[Union[str, int]] = str) -> Union[str, int]:
         if key not in self.form:
             flask.abort(400, f'{key} was not found in request')
         value = self.form[key]
         if is_dirty(value):
             flask.abort(400, f'{key} was malformed')
+        if not isinstance(value, expected_type):
+            value = expected_type(value)
         return value
 
 
@@ -45,7 +49,7 @@ def create_random_id(length: int = 32) -> str:
     return uuid.uuid4().hex[:min(length, 32)]
 
 
-def create_response(code: int, body: typing.Union[list[dict], dict]) -> dict:
+def create_response(code: int, body: Union[list[dict], dict]) -> dict:
     if not isinstance(body, list):
         body = [body]
     return {

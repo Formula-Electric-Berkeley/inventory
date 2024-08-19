@@ -9,7 +9,8 @@ from werkzeug.exceptions import HTTPException
 
 
 def _create_table(table_name: str, key_model: models.Model):
-    table_keys = ', '.join([f'{k} TEXT' for k in key_model.to_response().keys()])
+    model_keys = key_model.to_dict().items()
+    table_keys = ', '.join([f'{k} {"INTEGER" if isinstance(v, int) else "TEXT"}' for k, v in model_keys])
     conn = common.get_db_connection()
     cursor = conn.cursor()
     cursor.execute(f'CREATE TABLE IF NOT EXISTS {table_name}({table_keys})').close()

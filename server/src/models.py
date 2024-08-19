@@ -1,5 +1,4 @@
 from typing import Any
-from typing import Union
 
 import common
 
@@ -20,34 +19,40 @@ class Model:
 
 
 class Item(Model):
+    """Represents a single inventory item in the database."""
+
     def __init__(
-        self, item_id: str, mfg_part_number: str, quantity: Union[int, str],
-        description: str, digikey_part_number: str, mouser_part_number: str, jlcpcb_part_number,
-        created_by: str, created_epoch_millis: Union[int, str],
+        self, item_id: str, mfg_part_number: str, quantity: int,
+        description: str, digikey_part_number: str, mouser_part_number: str, jlcpcb_part_number: str,
+        created_by: str, created_epoch_millis: int,
     ):
         super().__init__()
         self.item_id = item_id
         self.mfg_part_number = mfg_part_number
-        self.quantity = int(quantity)
+        self.quantity = quantity
         self.description = description
         self.digikey_part_number = digikey_part_number
         self.mouser_part_number = mouser_part_number
         self.jlcpcb_part_number = jlcpcb_part_number
         self.created_by = created_by
-        self.created_epoch_millis = int(created_epoch_millis)
+        self.created_epoch_millis = created_epoch_millis
 
 
 class User(Model):
-    def __init__(self, user_id: str, api_key: str, name: str, authmask: str):
+    """Represents a single user in the database."""
+
+    def __init__(self, user_id: str, api_key: str, name: str, authmask: int):
         super().__init__()
         self.user_id = user_id
         self.api_key = api_key
         self.name = name
-        self.authmask = int(authmask)
+        self.authmask = authmask
 
 
 class Reservation(Model):
-    def __init__(self, reservation_id: str, user_id: str, item_id: str, quantity: str):
+    """Represents a single reservation in the database."""
+
+    def __init__(self, reservation_id: str, user_id: str, item_id: str, quantity: int):
         super().__init__()
         self.reservation_id = reservation_id
         self.user_id = user_id
@@ -55,6 +60,13 @@ class Reservation(Model):
         self.quantity = int(quantity)
 
 
-BLANK_ITEM = Item(*[str('0')]*9)
-BLANK_USER = User(*[str('0')]*4)
-BLANK_RESERVATION = Reservation(*[str('0')]*4)
+class BlankParameters(list):
+    def __init__(self, *type_pairs: tuple[int, type]):
+        super().__init__()
+        for n, _type in type_pairs:
+            self.extend([_type()]*n)
+
+
+BLANK_ITEM = Item(*BlankParameters((2, str), (1, int), (5, str), (1, int)))
+BLANK_USER = User(*BlankParameters((3, str), (1, int)))
+BLANK_RESERVATION = Reservation(*BlankParameters((3, str), (1, int)))
