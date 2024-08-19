@@ -10,6 +10,7 @@ FEB Inventory API Documentation
    :caption: Contents:
 
    models
+   auth
    api-item
    api-user
    api-reservation

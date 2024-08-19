@@ -2,5 +2,4 @@ API Models
 ==========
 
 .. automodule:: models
-   :members:
-   :undoc-members:
+   :members: Item, Reservation, User
