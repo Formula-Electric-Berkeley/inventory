@@ -13,6 +13,7 @@ import common
 import flask
 import models
 
+
 api_item_blueprint = flask.Blueprint('api_item', __name__)
 
 
@@ -115,7 +116,7 @@ def api_item_create():
         created_by=user_id,
         created_epoch_millis=common.time_ms(),
     )
-    cursor.execute('INSERT INTO items VALUES (?)', (item.to_insert_str(),))
+    cursor.execute(f'INSERT INTO {common.ITEMS_TABLE_NAME} VALUES (?)', (item.to_insert_str(),))
     conn.commit()
     return item.to_response()
 
@@ -148,10 +149,10 @@ def api_item_update():
              ``400`` if API key was malformed,\n
              ``401`` if API key was invalid,\n
              ``403`` if user does not have required scope,\n
-             ``404`` if item was not found,\n
+             ``404`` if item was not found before updating,\n
+             ``404`` if the item was not found after updating,\n
              ``500`` if any other error while authenticating
     """
-    # TODO this route should return the updated item
     form = common.FlaskPOSTForm(flask.request.form)
 
     conn = common.get_db_connection()
@@ -179,7 +180,12 @@ def api_item_update():
         cursor.execute(f'UPDATE {common.ITEMS_TABLE_NAME} SET {key}=? WHERE item_id=?', query_params)
     conn.commit()
 
-    return common.create_response(200, {})
+    updated_item_res = cursor.execute(f'SELECT * FROM {common.ITEMS_TABLE_NAME} WHERE item_id=?', (item_id,))
+    db_updated_item = updated_item_res.fetchone()
+    if db_updated_item is None or len(db_updated_item) == 0:
+        flask.abort(404, 'Item did not exist after updating')
+    updated_item = models.Item(*db_updated_item)
+    return updated_item.to_response()
 
 
 @api_item_blueprint.route('/api/item/remove', methods=['POST'])
@@ -198,24 +204,27 @@ def api_item_remove():
              ``401`` if API key was invalid,\n
              ``403`` if user does not have required scope,\n
              ``404`` if item was not found,\n
+             ``500`` if more than one item was found,\n
              ``500`` if any other error while authenticating
     """
-    # TODO this route should return the deleted item
     form = common.FlaskPOSTForm(flask.request.form)
 
     conn = common.get_db_connection()
     cursor = conn.cursor()
 
     item_id = form.get('item_id')
-    item_res = cursor.execute(f'SELECT 1 FROM {common.ITEMS_TABLE_NAME} WHERE item_id=? LIMIT 1', (item_id,))
-    db_item = item_res.fetchone()
+    item_res = cursor.execute(f'SELECT * FROM {common.ITEMS_TABLE_NAME} WHERE item_id=?', (item_id,))
+    db_item = item_res.fetchall()
     if db_item is None or len(db_item) == 0 or db_item == 0:
         flask.abort(404, 'Item does not exist')
+    if len(db_item) != 1:
+        flask.abort(500, f'Expected 1 item with matching item ID, got {len(db_item)}')
 
     cursor.execute(f'DELETE FROM {common.ITEMS_TABLE_NAME} WHERE item_id=?', (item_id,))
     conn.commit()
 
-    return common.create_response(200, {})
+    deleted_item = models.Item(*db_item)
+    return deleted_item.to_response()
 
 
 @api_item_blueprint.route('/api/items/list', methods=['GET', 'POST'])

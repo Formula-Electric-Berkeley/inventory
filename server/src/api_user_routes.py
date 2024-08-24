@@ -29,6 +29,7 @@ def api_user_get(user_id):
 @api_user_blueprint.route('/api/user/create', methods=['POST'])
 @auth.route_requires_auth(auth.Scope.USER_CREATE)
 def api_user_create():
+    # TODO documentation
     form = common.FlaskPOSTForm(flask.request.form)
 
     conn = common.get_db_connection()

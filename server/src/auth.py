@@ -21,11 +21,12 @@ class Scope(enum.IntFlag):
     ITEM_CREATE = enum.auto()
     ITEM_UPDATE = enum.auto()
     ITEM_REMOVE = enum.auto()
+    ITEMS_LIST = enum.auto()
     RESERVATION_GET = enum.auto()
     RESERVATION_CREATE = enum.auto()
     RESERVATION_UPDATE = enum.auto()
     RESERVATION_REMOVE = enum.auto()
-    ITEMS_LIST = enum.auto()
+    RESERVATIONS_LIST = enum.auto()
     USER_GET = enum.auto()
     USER_CREATE = enum.auto()
     USER_UPDATE = enum.auto()
@@ -36,9 +37,10 @@ def route_requires_auth(scope):
     def for_route(route):
         @wraps(route)
         def execute():
+            if 'api_key' not in flask.request.form:
+                flask.abort(400, 'API key was not present')
             require_auth(scope, flask.request.form.get('api_key'))
             return route()
-
         execute.__name__ = route.__name__
         execute.__doc__ = route.__doc__
         return execute
