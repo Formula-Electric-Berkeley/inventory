@@ -12,7 +12,7 @@ DATABASE_PATH = os.path.abspath('inventory.db')
 ITEMS_TABLE_NAME = 'items'                   #: Database table name for items.
 USERS_TABLE_NAME = 'users'                   #: Database table name for users.
 RESERVATIONS_TABLE_NAME = 'reservations'     #: Database table name for reservations.
-RET_ITEMS_LIMIT = 200                        #: Maximum number of returned items.
+RET_ENTITIES_LIMIT = 200                     #: Maximum number of returned entities.
 
 
 class FlaskPOSTForm:
