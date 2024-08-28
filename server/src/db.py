@@ -1,3 +1,4 @@
+# TODO documentation
 from typing import Type
 
 import common
@@ -5,12 +6,13 @@ import flask
 import models
 
 
-def get(id_: str, id_name: str, table_name: str, entity_type: Type[models.Model]):
+def get(id_: str, entity_type: Type[models.Model]):
+    # TODO documentation
     if common.is_dirty(id_):
-        flask.abort(400, f'{id_name} was malformed')
+        flask.abort(400, f'{entity_type.id_name()} was malformed')
     conn = common.get_db_connection()
     cursor = conn.cursor()
-    res = cursor.execute(f'SELECT * FROM {table_name} WHERE {id_name}=?', (id_,))
+    res = cursor.execute(f'SELECT * FROM {entity_type.table_name()} WHERE {entity_type.id_name()}=?', (id_,))
     db_entity = res.fetchone()
     if db_entity is None or len(db_entity) == 0:
         flask.abort(404, 'Item does not exist')
@@ -18,15 +20,16 @@ def get(id_: str, id_name: str, table_name: str, entity_type: Type[models.Model]
     return entity.to_response()
 
 
-def update(id_name: str, table_name: str, blank_entity: models.Model, immutable_props: list[str]):
+def update(blank_entity: models.Model, immutable_props: list[str]):
+    # TODO documentation
     form = common.FlaskPOSTForm(flask.request.form)
 
     conn = common.get_db_connection()
     cursor = conn.cursor()
 
     # Check that entity exists in DB before modifying
-    id_ = form.get(id_name)
-    res = cursor.execute(f'SELECT 1 FROM {table_name} WHERE {id_name}=? LIMIT 1', (id_,))
+    id_ = form.get(blank_entity.id_name())
+    res = cursor.execute(f'SELECT 1 FROM {blank_entity.table_name()} WHERE {blank_entity.id_name()}=? LIMIT 1', (id_,))
     db_entity = res.fetchone()
     if db_entity is None or len(db_entity) == 0 or db_entity == 0:
         flask.abort(404, f'{blank_entity.__class__.__name__} does not exist')
@@ -42,10 +45,12 @@ def update(id_name: str, table_name: str, blank_entity: models.Model, immutable_
 
     for key, value in properties_to_update.items():
         query_params = (form.get(key, type(value)), id_)
-        cursor.execute(f'UPDATE {table_name} SET {key}=? WHERE {id_name}=?', query_params)
+        cursor.execute(
+            f'UPDATE {blank_entity.table_name()} SET {key}=? WHERE {blank_entity.id_name()}=?', query_params,
+        )
     conn.commit()
 
-    updated_res = cursor.execute(f'SELECT * FROM {table_name} WHERE {id_name}=?', (id_,))
+    updated_res = cursor.execute(f'SELECT * FROM {blank_entity.table_name()} WHERE {blank_entity.id_name()}=?', (id_,))
     db_updated_entity = updated_res.fetchone()
     if db_updated_entity is None or len(db_updated_entity) == 0:
         flask.abort(404, f'{blank_entity.__class__.__name__} did not exist after updating')
@@ -53,28 +58,30 @@ def update(id_name: str, table_name: str, blank_entity: models.Model, immutable_
     return updated_entity.to_response()
 
 
-def remove(id_name: str, table_name: str, entity_type: Type[models.Model]):
+def remove(entity_type: Type[models.Model]):
+    # TODO documentation
     form = common.FlaskPOSTForm(flask.request.form)
 
     conn = common.get_db_connection()
     cursor = conn.cursor()
 
-    id_ = form.get(id_name)
-    entity_res = cursor.execute(f'SELECT * FROM {table_name} WHERE {id_name}=?', (id_,))
+    id_ = form.get(entity_type.id_name())
+    entity_res = cursor.execute(f'SELECT * FROM {entity_type.table_name()} WHERE {entity_type.id_name()}=?', (id_,))
     db_entity = entity_res.fetchall()
     if db_entity is None or len(db_entity) == 0 or db_entity == 0:
         flask.abort(404, f'{entity_type.__name__} does not exist')
     if len(db_entity) != 1:
         flask.abort(500, f'Expected 1 item with matching {entity_type.__name__.lower()} ID, got {len(db_entity)}')
 
-    cursor.execute(f'DELETE FROM {table_name} WHERE {id_name}=?', (id_,))
+    cursor.execute(f'DELETE FROM {entity_type.table_name()} WHERE {entity_type.id_name()}=?', (id_,))
     conn.commit()
 
     deleted_entity = entity_type(*db_entity)
     return deleted_entity.to_response()
 
 
-def list_(table_name: str, entity_type: Type[models.Model]):
+def list_(entity_type: Type[models.Model]):
+    # TODO documentation
     # TODO make this not display EVERYTHING or at least do some rate limiting
     # TODO add a search functionality option to this too
     conn = common.get_db_connection()
@@ -103,10 +110,10 @@ def list_(table_name: str, entity_type: Type[models.Model]):
         if sortby not in models.BLANK_ITEM.to_dict().keys():
             flask.abort(400, f'{sortby} is not a valid sort key')
 
-        query = f'SELECT * FROM {table_name} ORDER BY {sortby} {direction} LIMIT {limit}'
+        query = f'SELECT * FROM {entity_type.table_name()} ORDER BY {sortby} {direction} LIMIT {limit}'
         res = cursor.execute(query)
     else:
-        res = cursor.execute(f'SELECT * FROM {table_name} LIMIT {limit}')
+        res = cursor.execute(f'SELECT * FROM {entity_type.table_name()} LIMIT {limit}')
     db_entities = res.fetchall()
 
     entities = [entity_type(*db_entity) for db_entity in db_entities]

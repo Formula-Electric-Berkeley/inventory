@@ -29,12 +29,7 @@ def api_item_get_static(item_id):
              ``400`` if item ID was malformed,\n
              ``404`` if item was not found
     """
-    return db.get(
-        id_=item_id,
-        id_name='item_id',
-        table_name=common.ITEMS_TABLE_NAME,
-        entity_type=models.Item,
-    )
+    return db.get(id_=item_id, entity_type=models.Item)
 
 
 @api_item_blueprint.route('/api/item/get', methods=['GET', 'POST'])
@@ -52,14 +47,9 @@ def api_item_get_dynamic():
     """
     # If GET use query parameters, else if POST use form data
     request_parameters = flask.request.form if flask.request.method == 'POST' else flask.request.args
-    if 'item_id' not in request_parameters:
+    if models.Item.id_name not in request_parameters:
         flask.abort(400, 'Item ID was not found')
-    return db.get(
-        id_=request_parameters.get('item_id'),
-        id_name='item_id',
-        table_name=common.ITEMS_TABLE_NAME,
-        entity_type=models.Item,
-    )
+    return db.get(id_=request_parameters.get(models.Item.id_name), entity_type=models.Item)
 
 
 @api_item_blueprint.route('/api/item/create', methods=['POST'])
@@ -72,6 +62,7 @@ def api_item_create():
 
     All item attributes are required as listed:
 
+        * ``box_id: str``
         * ``mfg_part_number: str``
         * ``quantity: int``
         * ``description: str``
@@ -96,7 +87,8 @@ def api_item_create():
     conn = common.get_db_connection()
     cursor = conn.cursor()
 
-    user_res = cursor.execute(f'SELECT user_id FROM {common.USERS_TABLE_NAME} WHERE api_key=?', (form.get('api_key'),))
+    user_query = f'SELECT {models.User.id_name} FROM {common.USERS_TABLE_NAME} WHERE api_key=?'
+    user_res = cursor.execute(user_query, (form.get('api_key'),))
     db_user = user_res.fetchone()
     if db_user is None or len(db_user) == 0:
         flask.abort(404, 'User does not exist')
@@ -104,6 +96,7 @@ def api_item_create():
 
     item = models.Item(
         item_id=common.create_random_id(length=8),
+        box_id=form.get(models.Box.id_name),
         mfg_part_number=form.get('mfg_part_number'),
         quantity=form.get('quantity', int),
         description=form.get('description'),
@@ -128,6 +121,7 @@ def api_item_update():
 
     Available attributes to update/modify are:
 
+        * ``box_id: str``
         * ``mfg_part_number: str``
         * ``quantity: int``
         * ``description: str``
@@ -151,11 +145,9 @@ def api_item_update():
              ``500`` if any other error while authenticating
     """
     return db.update(
-        id_name='item_id',
-        table_name=common.ITEMS_TABLE_NAME,
         blank_entity=models.BLANK_ITEM,
         immutable_props=[
-            'item_id',
+            models.Item.id_name,
             'created_by',
             'created_epoch_millis',
         ],
@@ -181,11 +173,7 @@ def api_item_remove():
              ``500`` if more than one item was found,\n
              ``500`` if any other error while authenticating
     """
-    return db.remove(
-        id_name='item_id',
-        table_name=common.ITEMS_TABLE_NAME,
-        entity_type=models.Item,
-    )
+    return db.remove(entity_type=models.Item)
 
 
 @api_item_blueprint.route('/api/items/list', methods=['GET', 'POST'])
@@ -210,7 +198,4 @@ def api_items_list():
              ``400`` if ``direction`` is not ``ASC`` or ``DESC``,\n
              ``400`` if ``limit`` is not an integer (digit string)
     """
-    return db.list_(
-        table_name=common.ITEMS_TABLE_NAME,
-        entity_type=models.Item,
-    )
+    return db.list_(entity_type=models.Item)

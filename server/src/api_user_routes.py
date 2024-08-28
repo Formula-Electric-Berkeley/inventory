@@ -16,12 +16,7 @@ def api_user_get():
     # TODO documentation
     # TODO other methods? (opt)
     form = common.FlaskPOSTForm(flask.request.form)
-    return db.get(
-        id_=form.get('user_id'),
-        id_name='user_id',
-        table_name=common.USERS_TABLE_NAME,
-        entity_type=models.User,
-    )
+    return db.get(id_=form.get(models.User.id_name), entity_type=models.User)
 
 
 @api_user_blueprint.route('/api/user/create', methods=['POST'])
@@ -55,11 +50,9 @@ def api_user_create():
 def api_user_update():
     # TODO documentation
     return db.update(
-        id_name='user_id',
-        table_name=common.USERS_TABLE_NAME,
         blank_entity=models.BLANK_USER,
         immutable_props=[
-            'user_id',
+            models.User.id_name,
             'api_key',
             'name',
         ],
@@ -70,8 +63,4 @@ def api_user_update():
 @auth.route_requires_auth(auth.Scope.USER_REMOVE)
 def api_user_remove():
     # TODO documentation
-    return db.remove(
-        id_name='user_id',
-        table_name=common.USERS_TABLE_NAME,
-        entity_type=models.User,
-    )
+    return db.remove(entity_type=models.User)

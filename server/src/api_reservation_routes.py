@@ -10,12 +10,7 @@ api_reservation_blueprint = flask.Blueprint('api_reservation', __name__)
 @api_reservation_blueprint.route('/api/reservation/get', methods=['POST'])
 def api_reservation_get():
     form = common.FlaskPOSTForm(flask.request.form)
-    return db.get(
-        id_=form.get('reservation_id'),
-        id_name='reservation_id',
-        table_name=common.RESERVATIONS_TABLE_NAME,
-        entity_type=models.Reservation,
-    )
+    return db.get(id_=form.get(models.Reservation.id_name), entity_type=models.Reservation)
 
 
 @api_reservation_blueprint.route('/api/reservation/create', methods=['POST'])
@@ -27,14 +22,15 @@ def api_reservation_create():
     conn = common.get_db_connection()
     cursor = conn.cursor()
 
-    user_res = cursor.execute(f'SELECT user_id FROM {common.USERS_TABLE_NAME} WHERE api_key=?', (form.get('api_key'),))
+    user_query = f'SELECT {models.User.id_name} FROM {common.USERS_TABLE_NAME} WHERE api_key=?'
+    user_res = cursor.execute(user_query, (form.get('api_key'),))
     db_user = user_res.fetchone()
     if db_user is None or len(db_user) == 0:
         flask.abort(404, 'User does not exist')
     user_id = db_user[0]
 
-    item_id = form.get('item_id')
-    item_res = cursor.execute(f'SELECT * FROM {common.ITEMS_TABLE_NAME} WHERE item_id=?')
+    item_id = form.get(models.Item.id_name)
+    item_res = cursor.execute(f'SELECT * FROM {common.ITEMS_TABLE_NAME} WHERE {models.Item.id_name}=?')
     db_item = item_res.fetchone()
     if db_item is None or len(db_item) == 0:
         flask.abort(404, 'Item does not exist')
@@ -59,13 +55,11 @@ def api_reservation_create():
 @auth.route_requires_auth(auth.Scope.RESERVATION_UPDATE)
 def api_reservation_update():
     return db.update(
-        id_name='reservation_id',
-        table_name=common.RESERVATIONS_TABLE_NAME,
         blank_entity=models.BLANK_RESERVATION,
         immutable_props=[
-            'reservation_id',
-            'user_id',
-            'item_id',
+            models.Reservation.id_name,
+            models.User.id_name,
+            models.Item.id_name,
         ],
     )
 
@@ -74,18 +68,10 @@ def api_reservation_update():
 @auth.route_requires_auth(auth.Scope.RESERVATION_REMOVE)
 def api_reservation_remove():
     # TODO documentation
-    return db.remove(
-        id_name='reservation_id',
-        table_name=common.RESERVATIONS_TABLE_NAME,
-        entity_type=models.Reservation,
-    )
+    return db.remove(entity_type=models.Reservation)
 
 
 @api_reservation_blueprint.route('/api/reservations/list', methods=['GET', 'POST'])
-@auth.route_requires_auth(auth.Scope.RESERVATIONS_LIST)
 def api_reservations_list():
     # TODO documentation
-    return db.list_(
-        table_name=common.RESERVATIONS_TABLE_NAME,
-        entity_type=models.Reservation,
-    )
+    return db.list_(entity_type=models.Reservation)
