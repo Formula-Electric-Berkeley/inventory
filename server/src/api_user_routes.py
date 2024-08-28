@@ -53,7 +53,7 @@ def api_user_update():
         blank_entity=models.BLANK_USER,
         immutable_props=[
             models.User.id_name,
-            'api_key',
+            auth.API_KEY_NAME,
             'name',
         ],
     )

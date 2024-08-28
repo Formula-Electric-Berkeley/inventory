@@ -87,8 +87,8 @@ def api_item_create():
     conn = common.get_db_connection()
     cursor = conn.cursor()
 
-    user_query = f'SELECT {models.User.id_name} FROM {common.USERS_TABLE_NAME} WHERE api_key=?'
-    user_res = cursor.execute(user_query, (form.get('api_key'),))
+    user_query = f'SELECT {models.User.id_name} FROM {common.USERS_TABLE_NAME} WHERE {auth.API_KEY_NAME}=?'
+    user_res = cursor.execute(user_query, (form.get(auth.API_KEY_NAME),))
     db_user = user_res.fetchone()
     if db_user is None or len(db_user) == 0:
         flask.abort(404, 'User does not exist')

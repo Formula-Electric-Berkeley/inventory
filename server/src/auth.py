@@ -5,6 +5,9 @@ import common
 import flask
 
 
+API_KEY_NAME = 'api_key'
+
+
 class Scope(enum.IntFlag):
     """
     Authentication scopes required for each API route.
@@ -37,9 +40,9 @@ def route_requires_auth(scope):
     def for_route(route):
         @wraps(route)
         def execute():
-            if 'api_key' not in flask.request.form:
+            if API_KEY_NAME not in flask.request.form:
                 flask.abort(400, 'API key was not present')
-            require_auth(scope, flask.request.form.get('api_key'))
+            require_auth(scope, flask.request.form.get(API_KEY_NAME))
             return route()
         execute.__name__ = route.__name__
         execute.__doc__ = route.__doc__
@@ -57,7 +60,7 @@ def require_auth(req_authmask: Scope, api_key: str) -> None:
 
     conn = common.get_db_connection()
     cursor = conn.cursor()
-    res = cursor.execute(f'SELECT authmask FROM {common.USERS_TABLE_NAME} WHERE api_key=?', (api_key,))
+    res = cursor.execute(f'SELECT authmask FROM {common.USERS_TABLE_NAME} WHERE {API_KEY_NAME}=?', (api_key,))
     db_authmask = res.fetchone()
 
     if db_authmask is None or len(db_authmask) != 1:
