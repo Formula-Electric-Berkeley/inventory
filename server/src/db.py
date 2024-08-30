@@ -1,5 +1,4 @@
 # TODO documentation
-import inspect
 from sqlite3.dbapi2 import Connection
 from sqlite3.dbapi2 import Cursor
 from typing import Type
@@ -36,7 +35,7 @@ def update(entity_type: Type[models.Model], immutable_props: list[str]):
         flask.abort(404, f'{entity_type.__class__.__name__} does not exist')
 
     # TODO have a better solution for mutability
-    entity_properties = dict(inspect.signature(entity_type.__init__).parameters)
+    entity_properties = models.get_entity_parameters(entity_type)
     for immutable_prop in immutable_props:
         entity_properties.pop(immutable_prop)
 
@@ -103,7 +102,7 @@ def list_(entity_type: Type[models.Model]):
         sortby = request_parameters.get('sortby')
         if common.is_dirty(sortby):
             flask.abort(400, 'sortby is malformed')
-        if sortby not in inspect.signature(entity_type.__init__).parameters.keys():
+        if sortby not in models.get_entity_parameters(entity_type).keys():
             flask.abort(400, f'{sortby} is not a valid sort key')
 
         query = f'SELECT * FROM {entity_type.table_name} ORDER BY {sortby} {direction} LIMIT {limit}'

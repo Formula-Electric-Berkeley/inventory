@@ -1,4 +1,6 @@
+import inspect
 from typing import Any
+from typing import Type
 
 import common
 from identifier import Identifier
@@ -101,6 +103,13 @@ class Box(Model):
     id_length = 8
     table_name = 'boxes'
 
-    def __init__(self, box_id: Identifier, box_name: str):
+    def __init__(self, box_id: Identifier, name: str):
         self.box_id = Identifier(length=Box.id_length, id_=box_id)
-        self.box_name = box_name
+        self.name = name
+
+
+def get_entity_parameters(entity_type: Type[Model]) -> dict[str, Any]:
+    raw_params = inspect.signature(entity_type.__init__).parameters
+    dict_params = dict(raw_params)
+    dict_params.pop('self')
+    return dict_params

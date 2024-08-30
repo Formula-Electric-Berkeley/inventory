@@ -41,8 +41,7 @@ def api_reservation_create():
         item_id=Identifier(length=models.Item.id_length, id_=item_id),
         quantity=desired_quantity,
     )
-    cursor.execute(f'INSERT INTO {models.Reservation.table_name} VALUES (?)', (reservation.to_insert_str(),))
-    conn.commit()
+    db.create_entity(conn, cursor, reservation)
     return reservation.to_response()
 
 

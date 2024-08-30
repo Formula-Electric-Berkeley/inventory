@@ -37,9 +37,7 @@ def api_user_create():
         name=form.get('name'),
         authmask=form.get('authmask'),
     )
-
-    cursor.execute(f'INSERT INTO {models.User.table_name} VALUES (?)', (user.to_insert_str(),))
-    conn.commit()
+    db.create_entity(conn, cursor, user)
     return user.to_response()
 
 

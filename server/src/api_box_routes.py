@@ -22,14 +22,14 @@ def api_box_create():
     conn, cursor = common.get_db_connection()
 
     desired_name = form.get('name')
-    box_res = cursor.execute(f'SELECT * FROM {models.Box.table_name} WHERE name={desired_name}')
+    box_res = cursor.execute(f'SELECT * FROM {models.Box.table_name} WHERE name=?', (desired_name,))
     db_box = box_res.fetchone()
     if db_box is not None:
         flask.abort(400, f'Box with name {desired_name} already exists')
 
     box = models.Box(
         box_id=Identifier(length=models.Box.id_length),
-        box_name=desired_name,
+        name=desired_name,
     )
 
     db.create_entity(conn, cursor, box)
