@@ -3,6 +3,7 @@ import common
 import db
 import flask
 import models
+from identifier import Identifier
 
 api_box_blueprint = flask.Blueprint('api_box', __name__)
 
@@ -14,7 +15,7 @@ def api_box_get():
 
 
 @api_box_blueprint.route('/api/box/create', methods=['POST'])
-@auth.route_requires_auth(auth.Scope.box_CREATE)
+@auth.route_requires_auth(auth.Scope.BOX_CREATE)
 def api_box_create():
     # TODO documentation
     form = common.FlaskPOSTForm(flask.request.form)
@@ -27,21 +28,19 @@ def api_box_create():
         flask.abort(400, f'Box with name {desired_name} already exists')
 
     box = models.Box(
-        box_id=common.create_random_id(length=8),
+        box_id=Identifier(length=models.Box.id_length),
         box_name=desired_name,
     )
 
-    cursor.execute(f'INSERT INTO {models.Box.table_name} VALUES (?)', (box.to_insert_str(),))
-    conn.commit()
-
+    db.create_entity(conn, cursor, box)
     return box.to_response()
 
 
 @api_box_blueprint.route('/api/box/update', methods=['POST'])
-@auth.route_requires_auth(auth.Scope.box_UPDATE)
+@auth.route_requires_auth(auth.Scope.BOX_UPDATE)
 def api_box_update():
     return db.update(
-        blank_entity=models.BLANK_BOX,
+        entity_type=models.Box,
         immutable_props=[
             models.Box.id_name,
             models.User.id_name,
@@ -51,7 +50,7 @@ def api_box_update():
 
 
 @api_box_blueprint.route('/api/box/remove', methods=['POST'])
-@auth.route_requires_auth(auth.Scope.box_REMOVE)
+@auth.route_requires_auth(auth.Scope.BOX_REMOVE)
 def api_box_remove():
     # TODO documentation
     return db.remove(entity_type=models.Box)

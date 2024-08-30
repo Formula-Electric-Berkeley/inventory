@@ -3,30 +3,32 @@ import re
 import sqlite3
 import time
 import typing
-import uuid
 from typing import Union
 
 import flask
+from identifier import Identifier
 
 DATABASE_PATH = os.path.abspath('inventory.db')
-ITEMS_TABLE_NAME = 'items'                   #: Database table name for items.
-USERS_TABLE_NAME = 'users'                   #: Database table name for users.
-RESERVATIONS_TABLE_NAME = 'reservations'     #: Database table name for reservations.
 RET_ENTITIES_LIMIT = 200                     #: Maximum number of returned entities.
+
+T = Union[str, int, Identifier]
 
 
 class FlaskPOSTForm:
     def __init__(self, form):
         self.form = form
 
-    def get(self, key, expected_type: typing.Type[Union[str, int]] = str) -> Union[str, int]:
+    def get(self, key, expected_type: typing.Type[T] = str) -> T:
         if key not in self.form:
             flask.abort(400, f'{key} was not found in request')
         value = self.form[key]
         if is_dirty(value):
             flask.abort(400, f'{key} was malformed')
         if not isinstance(value, expected_type):
-            value = expected_type(value)
+            try:
+                value = expected_type(value)
+            except ValueError:
+                flask.abort(400, f'{key} could not be converter to type {expected_type.__name__}')
         return value
 
 
@@ -44,10 +46,6 @@ def is_dirty(value: str):
 
 def time_ms() -> int:
     return int(time.time_ns() * 1e-6)
-
-
-def create_random_id(length: int = 32) -> str:
-    return uuid.uuid4().hex[:min(length, 32)]
 
 
 def create_response(code: int, body: Union[list[dict], dict]) -> dict:

@@ -1,6 +1,7 @@
 from typing import Any
 
 import common
+from identifier import Identifier
 
 
 class Model:
@@ -21,10 +22,20 @@ class Model:
         # TODO documentation
         return self.to_insert_str()
 
+    def __iter__(self):
+        # TODO documentation
+        for v in self.to_dict().values():
+            yield v
+
     @classmethod
     def id_name(cls) -> str:
         # TODO documentation
         raise NotImplementedError('ID name not implemented')
+
+    @classmethod
+    def id_length(cls) -> int:
+        # TODO documentation
+        raise NotImplementedError('ID length not implemented')
 
     @classmethod
     def table_name(cls) -> str:
@@ -34,35 +45,37 @@ class Model:
 
 class Item(Model):
     """Represents a single inventory item in the database."""
-    id_name = 'test'
+    id_name = 'item_id'
+    id_length = 8
     table_name = 'items'
 
     def __init__(
-        self, item_id: str, box_id: str, mfg_part_number: str, quantity: int,
+        self, item_id: Identifier, box_id: Identifier, mfg_part_number: str, quantity: int,
         description: str, digikey_part_number: str, mouser_part_number: str, jlcpcb_part_number: str,
-        created_by: str, created_epoch_millis: int,
+        created_by: Identifier, created_epoch_millis: int,
     ):
         super().__init__()
-        self.item_id = item_id
-        self.box_id = box_id
+        self.item_id = Identifier(length=Item.id_length, id_=item_id)
+        self.box_id = Identifier(length=Box.id_length, id_=box_id)
         self.mfg_part_number = mfg_part_number
         self.quantity = quantity
         self.description = description
         self.digikey_part_number = digikey_part_number
         self.mouser_part_number = mouser_part_number
         self.jlcpcb_part_number = jlcpcb_part_number
-        self.created_by = created_by
+        self.created_by = Identifier(length=User.id_length, id_=created_by)
         self.created_epoch_millis = created_epoch_millis
 
 
 class User(Model):
     """Represents a single user in the database."""
-    id_name = 'user'
+    id_name = 'user_id'
+    id_length = 32
     table_name = 'users'
 
-    def __init__(self, user_id: str, api_key: str, name: str, authmask: int):
+    def __init__(self, user_id: Identifier, api_key: str, name: str, authmask: int):
         super().__init__()
-        self.user_id = user_id
+        self.user_id = Identifier(length=User.id_length, id_=user_id)
         self.api_key = api_key
         self.name = name
         self.authmask = authmask
@@ -70,35 +83,24 @@ class User(Model):
 
 class Reservation(Model):
     """Represents a single reservation in the database."""
-    id_name = 'reservation'
+    id_name = 'reservation_id'
+    id_length = 32
     table_name = 'reservations'
 
-    def __init__(self, reservation_id: str, user_id: str, item_id: str, quantity: int):
+    def __init__(self, reservation_id: Identifier, user_id: Identifier, item_id: Identifier, quantity: int):
         super().__init__()
-        self.reservation_id = reservation_id
-        self.user_id = user_id
-        self.item_id = item_id
+        self.reservation_id = Identifier(length=Reservation.id_length, id_=reservation_id)
+        self.user_id = Identifier(length=User.id_length, id_=user_id)
+        self.item_id = Identifier(length=Item.id_length, id_=item_id)
         self.quantity = int(quantity)
 
 
 class Box(Model):
     """Represents a single inventory box (not inventory item container) in the database."""
-    id_name = 'box'
+    id_name = 'box_id'
+    id_length = 8
     table_name = 'boxes'
 
-    def __init__(self, box_id: str, box_name: str):
-        self.box_id = box_id
+    def __init__(self, box_id: Identifier, box_name: str):
+        self.box_id = Identifier(length=Box.id_length, id_=box_id)
         self.box_name = box_name
-
-
-class BlankParameters(list):
-    def __init__(self, *type_pairs: tuple[int, type]):
-        super().__init__()
-        for n, _type in type_pairs:
-            self.extend([_type()]*n)
-
-
-BLANK_ITEM = Item(*BlankParameters((3, str), (1, int), (5, str), (1, int)))
-BLANK_USER = User(*BlankParameters((3, str), (1, int)))
-BLANK_RESERVATION = Reservation(*BlankParameters((3, str), (1, int)))
-BLANK_BOX = Box(*BlankParameters((2, str)))

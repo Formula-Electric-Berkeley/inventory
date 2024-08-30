@@ -3,7 +3,7 @@ from functools import wraps
 
 import common
 import flask
-
+import models
 
 API_KEY_NAME = 'api_key'
 
@@ -34,6 +34,11 @@ class Scope(enum.IntFlag):
     USER_CREATE = enum.auto()
     USER_UPDATE = enum.auto()
     USER_REMOVE = enum.auto()
+    BOX_GET = enum.auto()
+    BOX_CREATE = enum.auto()
+    BOX_UPDATE = enum.auto()
+    BOX_REMOVE = enum.auto()
+    BOXES_LIST = enum.auto()
 
 
 def route_requires_auth(scope):
@@ -58,9 +63,9 @@ def require_auth(req_authmask: Scope, api_key: str) -> None:
     if common.is_dirty(api_key):
         flask.abort(400, 'API key was malformed')
 
-    conn = common.get_db_connection()
-    cursor = conn.cursor()
-    res = cursor.execute(f'SELECT authmask FROM {common.USERS_TABLE_NAME} WHERE {API_KEY_NAME}=?', (api_key,))
+    conn, cursor = common.get_db_connection()
+
+    res = cursor.execute(f'SELECT authmask FROM {models.User.table_name} WHERE {API_KEY_NAME}=?', (api_key,))
     db_authmask = res.fetchone()
 
     if db_authmask is None or len(db_authmask) != 1:

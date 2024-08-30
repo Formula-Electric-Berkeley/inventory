@@ -13,7 +13,7 @@ import common
 import db
 import flask
 import models
-
+from identifier import Identifier
 
 api_item_blueprint = flask.Blueprint('api_item', __name__)
 
@@ -86,21 +86,22 @@ def api_item_create():
     conn, cursor = common.get_db_connection()
 
     user_id = db.get_request_user_id(cursor, form)
+    box_id = form.get(models.Box.id_name)
 
     item = models.Item(
-        item_id=common.create_random_id(length=8),
-        box_id=form.get(models.Box.id_name),
+        item_id=Identifier(length=models.Item.id_length),
+        box_id=Identifier(length=models.Box.id_length, id_=box_id),
         mfg_part_number=form.get('mfg_part_number'),
         quantity=form.get('quantity', int),
         description=form.get('description'),
         digikey_part_number=form.get('digikey_part_number'),
         mouser_part_number=form.get('mouser_part_number'),
         jlcpcb_part_number=form.get('jlcpcb_part_number'),
-        created_by=user_id,
+        created_by=Identifier(length=models.User.id_length, id_=user_id),
         created_epoch_millis=common.time_ms(),
     )
-    cursor.execute(f'INSERT INTO {models.Item.table_name} VALUES (?)', (item.to_insert_str(),))
-    conn.commit()
+
+    db.create_entity(conn, cursor, item)
     return item.to_response()
 
 
@@ -138,7 +139,7 @@ def api_item_update():
              ``500`` if any other error while authenticating
     """
     return db.update(
-        blank_entity=models.BLANK_ITEM,
+        entity_type=models.Item,
         immutable_props=[
             models.Item.id_name,
             'created_by',

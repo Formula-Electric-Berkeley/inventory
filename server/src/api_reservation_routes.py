@@ -3,6 +3,8 @@ import common
 import db
 import flask
 import models
+from identifier import Identifier
+
 
 api_reservation_blueprint = flask.Blueprint('api_reservation', __name__)
 
@@ -18,14 +20,12 @@ def api_reservation_get():
 def api_reservation_create():
     # TODO documentation
     form = common.FlaskPOSTForm(flask.request.form)
-
-    conn = common.get_db_connection()
-    cursor = conn.cursor()
+    conn, cursor = common.get_db_connection()
 
     user_id = db.get_request_user_id(cursor, form)
 
     item_id = form.get(models.Item.id_name)
-    item_res = cursor.execute(f'SELECT * FROM {models.Item.table_name} WHERE {models.Item.id_name}=?')
+    item_res = cursor.execute(f'SELECT * FROM {models.Item.table_name} WHERE {models.Item.id_name}=?', (item_id,))
     db_item = item_res.fetchone()
     if db_item is None or len(db_item) == 0:
         flask.abort(404, 'Item does not exist')
@@ -36,9 +36,9 @@ def api_reservation_create():
         flask.abort(400, f'Insufficient item quantity. Requested {desired_quantity}, had {item.quantity}')
 
     reservation = models.Reservation(
-        reservation_id=common.create_random_id(length=8),
-        user_id=user_id,
-        item_id=item_id,
+        reservation_id=Identifier(length=models.Reservation.id_length),
+        user_id=Identifier(length=models.User.id_length, id_=user_id),
+        item_id=Identifier(length=models.Item.id_length, id_=item_id),
         quantity=desired_quantity,
     )
     cursor.execute(f'INSERT INTO {models.Reservation.table_name} VALUES (?)', (reservation.to_insert_str(),))
@@ -50,7 +50,7 @@ def api_reservation_create():
 @auth.route_requires_auth(auth.Scope.RESERVATION_UPDATE)
 def api_reservation_update():
     return db.update(
-        blank_entity=models.BLANK_RESERVATION,
+        entity_type=models.Reservation,
         immutable_props=[
             models.Reservation.id_name,
             models.User.id_name,

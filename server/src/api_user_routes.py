@@ -5,7 +5,7 @@ import common
 import db
 import flask
 import models
-
+from identifier import Identifier
 
 api_user_blueprint = flask.Blueprint('api_user', __name__)
 
@@ -24,9 +24,7 @@ def api_user_get():
 def api_user_create():
     # TODO documentation
     form = common.FlaskPOSTForm(flask.request.form)
-
-    conn = common.get_db_connection()
-    cursor = conn.cursor()
+    conn, cursor = common.get_db_connection()
 
     existing_user_res = cursor.execute(f'SELECT * FROM {models.User.table_name} WHERE name=?', (form.get('name'),))
     existing_users = existing_user_res.fetchall()
@@ -34,7 +32,7 @@ def api_user_create():
         flask.abort(400, 'A user already exists with that name')
 
     user = models.User(
-        user_id=common.create_random_id(),
+        user_id=Identifier(length=models.User.id_length),
         api_key=secrets.token_hex(),
         name=form.get('name'),
         authmask=form.get('authmask'),
@@ -50,7 +48,7 @@ def api_user_create():
 def api_user_update():
     # TODO documentation
     return db.update(
-        blank_entity=models.BLANK_USER,
+        entity_type=models.User,
         immutable_props=[
             models.User.id_name,
             auth.API_KEY_NAME,

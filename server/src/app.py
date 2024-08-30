@@ -1,32 +1,37 @@
+import inspect
+from typing import Type
+
 import common
 import dotenv
 import flask
 import models
+from api_box_routes import api_box_blueprint
 from api_item_routes import api_item_blueprint
 from api_reservation_routes import api_reservation_blueprint
 from api_user_routes import api_user_blueprint
 from werkzeug.exceptions import HTTPException
 
 
-def _create_table(table_name: str, key_model: models.Model):
-    model_keys = key_model.to_dict().items()
+def _create_table(entity_type: Type[models.Model]):
+    model_keys = inspect.signature(entity_type.__init__).parameters.items()
     table_keys = ', '.join([f'{k} {"INTEGER" if isinstance(v, int) else "TEXT"}' for k, v in model_keys])
-    conn = common.get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(f'CREATE TABLE IF NOT EXISTS {table_name}({table_keys})').close()
+    conn, cursor = common.get_db_connection()
+    cursor.execute(f'CREATE TABLE IF NOT EXISTS {entity_type.table_name}({table_keys})').close()
 
 
 dotenv.load_dotenv()
 app = flask.Flask(__name__)
 
 with app.app_context():
-    _create_table(common.ITEMS_TABLE_NAME, models.BLANK_ITEM)
-    _create_table(common.USERS_TABLE_NAME, models.BLANK_USER)
-    _create_table(common.RESERVATIONS_TABLE_NAME, models.BLANK_RESERVATION)
+    _create_table(models.Item)
+    _create_table(models.User)
+    _create_table(models.Reservation)
+    _create_table(models.Box)
 
 app.register_blueprint(api_item_blueprint)
 app.register_blueprint(api_user_blueprint)
 app.register_blueprint(api_reservation_blueprint)
+app.register_blueprint(api_box_blueprint)
 
 
 @app.teardown_appcontext
