@@ -28,7 +28,7 @@ def api_user_create():
     conn = common.get_db_connection()
     cursor = conn.cursor()
 
-    existing_user_res = cursor.execute(f'SELECT * FROM {common.USERS_TABLE_NAME} WHERE name=?', (form.get('name'),))
+    existing_user_res = cursor.execute(f'SELECT * FROM {models.User.table_name} WHERE name=?', (form.get('name'),))
     existing_users = existing_user_res.fetchall()
     if len(existing_users) != 0:
         flask.abort(400, 'A user already exists with that name')
@@ -40,7 +40,7 @@ def api_user_create():
         authmask=form.get('authmask'),
     )
 
-    cursor.execute(f'INSERT INTO {common.USERS_TABLE_NAME} VALUES (?)', (user.to_insert_str(),))
+    cursor.execute(f'INSERT INTO {models.User.table_name} VALUES (?)', (user.to_insert_str(),))
     conn.commit()
     return user.to_response()
 

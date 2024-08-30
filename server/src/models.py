@@ -101,3 +101,4 @@ class BlankParameters(list):
 BLANK_ITEM = Item(*BlankParameters((3, str), (1, int), (5, str), (1, int)))
 BLANK_USER = User(*BlankParameters((3, str), (1, int)))
 BLANK_RESERVATION = Reservation(*BlankParameters((3, str), (1, int)))
+BLANK_BOX = Box(*BlankParameters((2, str)))

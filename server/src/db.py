@@ -1,6 +1,8 @@
 # TODO documentation
+from sqlite3.dbapi2 import Cursor
 from typing import Type
 
+import auth
 import common
 import flask
 import models
@@ -10,8 +12,7 @@ def get(id_: str, entity_type: Type[models.Model]):
     # TODO documentation
     if common.is_dirty(id_):
         flask.abort(400, f'{entity_type.id_name()} was malformed')
-    conn = common.get_db_connection()
-    cursor = conn.cursor()
+    conn, cursor = common.get_db_connection()
     res = cursor.execute(f'SELECT * FROM {entity_type.table_name()} WHERE {entity_type.id_name()}=?', (id_,))
     db_entity = res.fetchone()
     if db_entity is None or len(db_entity) == 0:
@@ -23,9 +24,7 @@ def get(id_: str, entity_type: Type[models.Model]):
 def update(blank_entity: models.Model, immutable_props: list[str]):
     # TODO documentation
     form = common.FlaskPOSTForm(flask.request.form)
-
-    conn = common.get_db_connection()
-    cursor = conn.cursor()
+    conn, cursor = common.get_db_connection()
 
     # Check that entity exists in DB before modifying
     id_ = form.get(blank_entity.id_name())
@@ -61,9 +60,7 @@ def update(blank_entity: models.Model, immutable_props: list[str]):
 def remove(entity_type: Type[models.Model]):
     # TODO documentation
     form = common.FlaskPOSTForm(flask.request.form)
-
-    conn = common.get_db_connection()
-    cursor = conn.cursor()
+    conn, cursor = common.get_db_connection()
 
     id_ = form.get(entity_type.id_name())
     entity_res = cursor.execute(f'SELECT * FROM {entity_type.table_name()} WHERE {entity_type.id_name()}=?', (id_,))
@@ -84,8 +81,7 @@ def list_(entity_type: Type[models.Model]):
     # TODO documentation
     # TODO make this not display EVERYTHING or at least do some rate limiting
     # TODO add a search functionality option to this too
-    conn = common.get_db_connection()
-    cursor = conn.cursor()
+    conn, cursor = common.get_db_connection()
 
     # If GET use query parameters, else if POST use form data
     request_parameters = flask.request.form if flask.request.method == 'POST' else flask.request.args
@@ -118,3 +114,13 @@ def list_(entity_type: Type[models.Model]):
 
     entities = [entity_type(*db_entity) for db_entity in db_entities]
     return common.create_response(200, [item.to_dict() for item in entities])
+
+
+def get_request_user_id(cursor: Cursor, form: common.FlaskPOSTForm) -> str:
+    user_query = f'SELECT {models.User.id_name} FROM {models.User.table_name} WHERE {auth.API_KEY_NAME}=?'
+    user_res = cursor.execute(user_query, (form.get(auth.API_KEY_NAME),))
+    db_user = user_res.fetchone()
+    if db_user is None or len(db_user) == 0:
+        flask.abort(404, 'User does not exist')
+    user_id = db_user[0]
+    return user_id

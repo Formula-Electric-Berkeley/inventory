@@ -83,16 +83,9 @@ def api_item_create():
              ``500`` if any other error while authenticating
     """
     form = common.FlaskPOSTForm(flask.request.form)
+    conn, cursor = common.get_db_connection()
 
-    conn = common.get_db_connection()
-    cursor = conn.cursor()
-
-    user_query = f'SELECT {models.User.id_name} FROM {common.USERS_TABLE_NAME} WHERE {auth.API_KEY_NAME}=?'
-    user_res = cursor.execute(user_query, (form.get(auth.API_KEY_NAME),))
-    db_user = user_res.fetchone()
-    if db_user is None or len(db_user) == 0:
-        flask.abort(404, 'User does not exist')
-    user_id = db_user[0]
+    user_id = db.get_request_user_id(cursor, form)
 
     item = models.Item(
         item_id=common.create_random_id(length=8),
@@ -106,7 +99,7 @@ def api_item_create():
         created_by=user_id,
         created_epoch_millis=common.time_ms(),
     )
-    cursor.execute(f'INSERT INTO {common.ITEMS_TABLE_NAME} VALUES (?)', (item.to_insert_str(),))
+    cursor.execute(f'INSERT INTO {models.Item.table_name} VALUES (?)', (item.to_insert_str(),))
     conn.commit()
     return item.to_response()
 

@@ -22,15 +22,10 @@ def api_reservation_create():
     conn = common.get_db_connection()
     cursor = conn.cursor()
 
-    user_query = f'SELECT {models.User.id_name} FROM {common.USERS_TABLE_NAME} WHERE {auth.API_KEY_NAME}=?'
-    user_res = cursor.execute(user_query, (form.get(auth.API_KEY_NAME),))
-    db_user = user_res.fetchone()
-    if db_user is None or len(db_user) == 0:
-        flask.abort(404, 'User does not exist')
-    user_id = db_user[0]
+    user_id = db.get_request_user_id(cursor, form)
 
     item_id = form.get(models.Item.id_name)
-    item_res = cursor.execute(f'SELECT * FROM {common.ITEMS_TABLE_NAME} WHERE {models.Item.id_name}=?')
+    item_res = cursor.execute(f'SELECT * FROM {models.Item.table_name} WHERE {models.Item.id_name}=?')
     db_item = item_res.fetchone()
     if db_item is None or len(db_item) == 0:
         flask.abort(404, 'Item does not exist')
@@ -46,7 +41,7 @@ def api_reservation_create():
         item_id=item_id,
         quantity=desired_quantity,
     )
-    cursor.execute(f'INSERT INTO {common.RESERVATIONS_TABLE_NAME} VALUES (?)', (reservation.to_insert_str(),))
+    cursor.execute(f'INSERT INTO {models.Reservation.table_name} VALUES (?)', (reservation.to_insert_str(),))
     conn.commit()
     return reservation.to_response()
 

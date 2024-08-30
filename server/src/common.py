@@ -34,7 +34,8 @@ def get_db_connection():
     conn = getattr(flask.g, '_database', None)
     if conn is None:
         conn = flask.g._database = sqlite3.connect(DATABASE_PATH)
-    return conn
+    cursor = conn.cursor()
+    return conn, cursor
 
 
 def is_dirty(value: str):
