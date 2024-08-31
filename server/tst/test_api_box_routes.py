@@ -8,7 +8,7 @@ import tstutil
 from identifier import Identifier
 
 
-class TestBoxCreate(tstutil.TestBase):
+class TestBoxCreate(tstutil.TestBase, tstutil.AuthorizedTests):
     scope = auth.Scope.BOX_CREATE
 
     def test_200(self):
@@ -49,8 +49,8 @@ class TestBoxCreate(tstutil.TestBase):
         return self.client.post('/api/box/create', data=attrs)
 
 
-class TestBoxGet(tstutil.TestBase):
-    scope = auth.Scope.BOX_GET
+class TestBoxGet(tstutil.TestBase, tstutil.IdTests):
+    entity_type = models.Box
 
     def setUp(self):
         super().setUp()
@@ -73,58 +73,18 @@ class TestBoxGet(tstutil.TestBase):
             },
         )
 
-    def test_400_malformed_id(self):
-        attrs = {
-            models.Box.id_name: '*',
-        }
-        self.call_route_assert_code(400, attrs)
-
-    def test_400_no_id(self):
-        attrs = {}
-        self.call_route_assert_code(400, attrs)
-
-    def test_404_nonexistent_box(self):
-        attrs = {
-            models.Box.id_name: 'tst-box-get-nonexistent-id',
-        }
-        self.call_route_assert_code(404, attrs)
-
-    def test_400_no_apikey(self):
-        # No authentication required
-        pass
-
-    def test_400_malformed_apikey(self):
-        # No authentication required
-        pass
-
-    def test_401_user_not_found(self):
-        # No authentication required
-        pass
-
-    def test_403_user_unauthorized(self):
-        # No authentication required
-        pass
-
     def call_route(self, attrs: dict[str, str]):
         return self.client.post('/api/box/get', data=attrs)
 
 
-class TestBoxUpdate(tstutil.TestBase):
+class TestBoxUpdate(tstutil.TestBase, tstutil.AuthorizedTests, tstutil.IdTests):
     scope = auth.Scope.BOX_UPDATE
+    entity_type = models.Box
 
     def test_200(self):
         pass
 
     def test_200_without_verification(self):
-        pass
-
-    def test_400_malformed_id(self):
-        pass
-
-    def test_400_no_id(self):
-        pass
-
-    def test_404_nonexistent_box(self):
         pass
 
     def test_400_change_immutable_properties(self):
@@ -140,22 +100,14 @@ class TestBoxUpdate(tstutil.TestBase):
         return self.client.post('/api/box/update', data=attrs)
 
 
-class TestBoxRemove(tstutil.TestBase):
+class TestBoxRemove(tstutil.TestBase, tstutil.AuthorizedTests, tstutil.IdTests):
     scope = auth.Scope.BOX_REMOVE
+    entity_type = models.Box
 
     def test_200(self):
         pass
 
     def test_200_without_verification(self):
-        pass
-
-    def test_400_malformed_id(self):
-        pass
-
-    def test_400_no_id(self):
-        pass
-
-    def test_404_nonexistent_box(self):
         pass
 
     def test_500_duplicate_id(self):
@@ -165,27 +117,23 @@ class TestBoxRemove(tstutil.TestBase):
         return self.client.post('/api/box/remove', data=attrs)
 
 
-# TODO finish
 class TestBoxesList(tstutil.TestBase):
-    scope = auth.Scope.BOXES_LIST
-
     def test_200(self):
         pass
 
-    def test_400_no_apikey(self):
-        # No authentication required
+    def test_400_limit_malformed(self):
         pass
 
-    def test_400_malformed_apikey(self):
-        # No authentication required
+    def test_400_limit_noninteger(self):
         pass
 
-    def test_401_user_not_found(self):
-        # No authentication required
+    def test_400_direction_malformed(self):
         pass
 
-    def test_403_user_unauthorized(self):
-        # No authentication required
+    def test_400_sortby_malformed(self):
+        pass
+
+    def test_400_invalid_sort_key(self):
         pass
 
     def call_route(self, attrs: dict[str, str]):

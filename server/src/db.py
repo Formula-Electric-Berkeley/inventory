@@ -32,7 +32,7 @@ def update(entity_type: Type[models.Model], immutable_props: list[str]):
     res = cursor.execute(f'SELECT 1 FROM {entity_type.table_name} WHERE {entity_type.id_name}=? LIMIT 1', (id_,))
     db_entity = res.fetchone()
     if db_entity is None or len(db_entity) == 0 or db_entity == 0:
-        flask.abort(404, f'{entity_type.__class__.__name__} does not exist')
+        flask.abort(404, f'{entity_type.__name__} does not exist')
 
     # TODO have a better solution for mutability
     entity_properties = models.get_entity_parameters(entity_type)
@@ -89,7 +89,7 @@ def list_(entity_type: Type[models.Model]):
 
     limit = common.RET_ENTITIES_LIMIT
     if 'limit' in request_parameters:
-        limit_raw = request_parameters.get('sortby')
+        limit_raw = request_parameters.get('limit')
         if common.is_dirty(limit_raw):
             flask.abort(400, 'limit is malformed')
         if not limit_raw.isdigit():
