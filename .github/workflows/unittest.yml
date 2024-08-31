@@ -1,0 +1,19 @@
+name: unittest
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v3
+    - run: |
+        cd server
+        python -m pip install -r requirements.txt
+    - run: |
+        cd server
+        python -m unittest discover -v

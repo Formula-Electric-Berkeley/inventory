@@ -17,7 +17,7 @@ def get(id_: str, entity_type: Type[models.Model]):
     res = cursor.execute(f'SELECT * FROM {entity_type.table_name} WHERE {entity_type.id_name}=?', (id_,))
     db_entity = res.fetchone()
     if db_entity is None or len(db_entity) == 0:
-        flask.abort(404, 'Item does not exist')
+        flask.abort(404, f'{entity_type.__name__} does not exist')
     entity = entity_type(*db_entity)
     return entity.to_response()
 
@@ -37,6 +37,8 @@ def update(entity_type: Type[models.Model], immutable_props: list[str]):
     # TODO have a better solution for mutability
     entity_properties = models.get_entity_parameters(entity_type)
     for immutable_prop in immutable_props:
+        if immutable_prop in form.form:
+            flask.abort(400, f'Immutable property {immutable_prop} found in request body')
         entity_properties.pop(immutable_prop)
 
     properties_to_update = {k: v for k, v in entity_properties.items() if k in form.form}

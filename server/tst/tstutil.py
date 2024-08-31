@@ -35,6 +35,17 @@ class TestBase(unittest.TestCase):
         self.assertEqual(status_code, resp_json['code'])
         return resp_json
 
+    def assert_single_entity(self, resp_json, expected: dict[str, str]):
+        self.assertIn('body', resp_json)
+        self.assertIsNotNone(resp_json['body'])
+        self.assertEqual(1, len(resp_json['body']))
+        entity_json = resp_json['body'][0]
+        self.assertIsNotNone(entity_json)
+        for key in expected.keys():
+            self.assertIn(key, entity_json)
+            self.assertEqual(expected[key], entity_json[key])
+        return entity_json
+
     def test_400_no_apikey(self):
         attrs = {}
         self.call_route_assert_code(400, attrs)
@@ -60,6 +71,9 @@ class TestBase(unittest.TestCase):
                 'api_key': create_user(scope).api_key,
             }
             self.call_route_assert_code(403, attrs)
+
+    def test_200(self):
+        raise NotImplementedError()
 
     def call_route(self, attrs: dict[str, str]):
         raise NotImplementedError()
