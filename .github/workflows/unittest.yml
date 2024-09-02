@@ -11,9 +11,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v3
-    - run: |
+    - name: Install dependencies
+      run: |
         cd server
         python -m pip install -r requirements.txt
-    - run: |
+    - name: Run all unit tests
+      run: |
         cd server
         python -m unittest discover -v

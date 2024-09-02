@@ -78,43 +78,64 @@ def remove(entity_type: Type[models.Model]):
     return deleted_entity.to_response()
 
 
+_list_cache = models.EntityCache()
+
+
 def list_(entity_type: Type[models.Model]):
     # TODO documentation
-    # TODO make this not display EVERYTHING or at least do some rate limiting
     # TODO add a search functionality option to this too
     conn, cursor = common.get_db_connection()
 
     # If GET use query parameters, else if POST use form data
     request_parameters = flask.request.form if flask.request.method == 'POST' else flask.request.args
 
-    limit = common.RET_ENTITIES_LIMIT
-    if 'limit' in request_parameters:
-        limit_raw = request_parameters.get('limit')
-        if common.is_dirty(limit_raw):
-            flask.abort(400, 'limit is malformed')
-        if not limit_raw.isdigit():
-            flask.abort(400, f'{limit_raw} is not a valid integer limit')
-        limit = int(limit_raw)
+    limit = get_int_parameter('limit', common.RET_ENTITIES_DEF_LIMIT, request_parameters)
+    limit = min(limit, common.RET_ENTITIES_MAX_LIMIT)
 
+    offset = get_int_parameter('offset', 0, request_parameters)
+
+    direction = request_parameters.get('direction', default='ASC').upper()
+    if common.is_dirty(direction) or (direction not in ('DESC', 'ASC')):
+        flask.abort(400, 'direction is malformed, should be DESC or ASC')
+
+    sortby = None
     if 'sortby' in request_parameters:
-        direction = request_parameters.get('direction', default='ASC').upper()
-        if common.is_dirty(direction) or (direction not in ('DESC', 'ASC')):
-            flask.abort(400, 'direction is malformed, should be DESC or ASC')
-
         sortby = request_parameters.get('sortby')
         if common.is_dirty(sortby):
             flask.abort(400, 'sortby is malformed')
         if sortby not in models.get_entity_parameters(entity_type).keys():
             flask.abort(400, f'{sortby} is not a valid sort key')
 
-        query = f'SELECT * FROM {entity_type.table_name} ORDER BY {sortby} {direction} LIMIT {limit}'
-        res = cursor.execute(query)
+        query = f'SELECT * FROM {entity_type.table_name} ORDER BY {sortby} {direction}'
     else:
-        res = cursor.execute(f'SELECT * FROM {entity_type.table_name} LIMIT {limit}')
-    db_entities = res.fetchall()
+        query = f'SELECT * FROM {entity_type.table_name}'
 
-    entities = [entity_type(*db_entity) for db_entity in db_entities]
-    return common.create_response(200, [item.to_dict() for item in entities])
+    cache_key = models.EntityCacheKey(direction, sortby, entity_type)
+    cached_result = _list_cache.get(cache_key)
+    if cached_result is not None:
+        entities = cached_result
+    else:
+        res = cursor.execute(query)
+        db_entities = res.fetchall()
+        entities = [entity_type(*db_entity) for db_entity in db_entities]
+        _list_cache.add(cache_key, entities)
+
+    cut_entities = models.EntityCache.cut(entities, limit, offset)
+    return common.create_response(200, [item.to_dict() for item in cut_entities])
+
+
+def get_int_parameter(key: str, default: int, request_parameters) -> int:
+    value = default
+    if key in request_parameters:
+        value_raw = request_parameters.get(key)
+        if common.is_dirty(value_raw):
+            flask.abort(400, f'{key} is malformed')
+        if not value_raw.isdigit():
+            flask.abort(400, f'{value_raw} is not a valid integer {key}')
+        value = int(value_raw)
+        if value < 0:
+            flask.abort(400, f'{key} cannot be negative')
+    return value
 
 
 def get_request_user_id(cursor: Cursor, form: common.FlaskPOSTForm) -> str:
