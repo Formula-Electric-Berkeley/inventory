@@ -3,7 +3,6 @@ import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
 import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the Data Grid
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Optional Theme applied to the Data Grid
 
-
 const Table = () => {
     const [colDefs] = useState([
         { headerName: "Description", field: "description", flex: 1 },
@@ -20,7 +19,7 @@ const Table = () => {
     useEffect(() => {
         const fetchParts = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/items/list');
+                const response = await fetch(`${window.env.REACT_APP_API_URL}/api/items/list`);
 
                 if (!response.ok) {
                     throw new Error('Network response failure');
