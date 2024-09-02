@@ -9,7 +9,8 @@ import flask
 from identifier import Identifier
 
 DATABASE_PATH = os.path.abspath('inventory.db')
-RET_ENTITIES_LIMIT = 200                     #: Maximum number of returned entities.
+RET_ENTITIES_DEF_LIMIT = 100                     #: Default number of returned entities.
+RET_ENTITIES_MAX_LIMIT = 1000                    #: Maximum number of returned entities.
 
 T = Union[str, int, Identifier]
 

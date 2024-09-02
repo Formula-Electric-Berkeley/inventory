@@ -1,5 +1,8 @@
 import inspect
+import time
 from typing import Any
+from typing import Dict
+from typing import Optional
 from typing import Type
 
 import common
@@ -106,6 +109,47 @@ class Box(Model):
     def __init__(self, box_id: Identifier, name: str):
         self.box_id = Identifier(length=Box.id_length, id_=box_id)
         self.name = name
+
+
+class EntityCacheKey:
+    def __init__(self, direction: str, sortby: Optional[str], entity_type: Type[Model], ttl_sec: int = 3600):
+        self.direction = direction
+        self.sortby = sortby
+        self.entity_type = entity_type
+        self.expiry_time = int(time.time()) + ttl_sec
+
+    def __eq__(self, other):
+        # Ignore expiry time in equality comparisons
+        return isinstance(other, EntityCacheKey) \
+            and (self.sortby is other.sortby) \
+            and (self.entity_type is other.entity_type)
+
+    def __hash__(self):
+        return hash((self.sortby, self.entity_type))
+
+
+class EntityCache:
+    def __init__(self):
+        self._map: Dict[EntityCacheKey, list[Model]] = {}
+
+    def add(self, key: EntityCacheKey, entities: list[Model]) -> None:
+        if len(entities) > 0:
+            self._map[key] = entities
+
+    def get(self, key: EntityCacheKey) -> Optional[list[Model]]:
+        for k in self._map.copy():
+            if k.expiry_time > time.time():
+                self._map.pop(k)
+                continue
+            if key is k:
+                return self._map[k]
+        return None
+
+    @staticmethod
+    def cut(entities: list[Model], limit: int, offset: int):
+        start_idx = max(min(offset, len(entities)), 0)
+        end_idx = min(offset + limit, len(entities))
+        return entities[start_idx:end_idx]
 
 
 def get_entity_parameters(entity_type: Type[Model]) -> dict[str, Any]:
