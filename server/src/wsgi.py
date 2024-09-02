@@ -9,7 +9,7 @@ from api_item_routes import api_item_blueprint
 from api_reservation_routes import api_reservation_blueprint
 from api_user_routes import api_user_blueprint
 from werkzeug.exceptions import HTTPException
-
+from flask_cors import CORS
 
 def _create_table(entity_type: Type[models.Model]):
     model_keys = models.get_entity_parameters(entity_type).items()
@@ -28,6 +28,7 @@ def create_tables():
 
 dotenv.load_dotenv()
 app = flask.Flask(__name__)
+CORS(app)
 
 create_tables()
 
