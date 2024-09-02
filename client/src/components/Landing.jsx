@@ -1,4 +1,3 @@
-import React, { useRef } from 'react';
 import Table from "./Table";
 
 const Landing = () => {
