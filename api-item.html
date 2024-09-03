@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -15,9 +15,9 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=01f34227"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=2389946f"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -48,7 +48,15 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="models.html">API Models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="auth.html">Authentication</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Item API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Item API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#api_item_routes.api_item_get_static"><code class="docutils literal notranslate"><span class="pre">api_item_get_static()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api_item_routes.api_item_get_dynamic"><code class="docutils literal notranslate"><span class="pre">api_item_get_dynamic()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api_item_routes.api_item_create"><code class="docutils literal notranslate"><span class="pre">api_item_create()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api_item_routes.api_item_update"><code class="docutils literal notranslate"><span class="pre">api_item_update()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api_item_routes.api_item_remove"><code class="docutils literal notranslate"><span class="pre">api_item_remove()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api_item_routes.api_items_list"><code class="docutils literal notranslate"><span class="pre">api_items_list()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api-user.html">User API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api-reservation.html">Reservation API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api-box.html">Box API</a></li>
@@ -79,8 +87,181 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="item-api">
-<h1>Item API<a class="headerlink" href="#item-api" title="Link to this heading"></a></h1>
+  <section id="module-api_item_routes">
+<span id="item-api"></span><h1>Item API<a class="headerlink" href="#module-api_item_routes" title="Permalink to this heading"></a></h1>
+<p>The Item API can create, get, update, remove, and list inventory item(s).</p>
+<p>All routes except item retrieval require authentication, which is handled by <a class="reference internal" href="auth.html#module-auth" title="auth"><code class="xref py py-mod docutils literal notranslate"><span class="pre">auth</span></code></a>.
+Idempotent routes use the <code class="docutils literal notranslate"><span class="pre">GET</span></code> method while non-idempotent routes use <code class="docutils literal notranslate"><span class="pre">POST</span></code>.</p>
+<dl class="simple">
+<dt>Base Item API endpoint:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">/api/item/</span></code> when the response contains zero or one <a class="reference internal" href="models.html#models.Item" title="models.Item"><code class="xref py py-class docutils literal notranslate"><span class="pre">models.Item</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/api/items/</span></code> when the response contains two or more <a class="reference internal" href="models.html#models.Item" title="models.Item"><code class="xref py py-class docutils literal notranslate"><span class="pre">models.Item</span></code></a> s</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="api_item_routes.api_item_get_static">
+<span class="sig-prename descclassname"><span class="pre">api_item_routes.</span></span><span class="sig-name descname"><span class="pre">api_item_get_static</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api_item_routes.api_item_get_static" title="Permalink to this definition"></a></dt>
+<dd><p>Get a single inventory item by item ID. Route forms a permalink (static) URL.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GET</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">item</span><span class="o">/</span><span class="n">get</span><span class="o">/&lt;</span><span class="n">item_id</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><code class="docutils literal notranslate"><span class="pre">200</span></code> on success with <a class="reference internal" href="models.html#models.Item" title="models.Item"><code class="xref py py-class docutils literal notranslate"><span class="pre">models.Item</span></code></a>,</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if item ID was malformed,</p>
+<p><code class="docutils literal notranslate"><span class="pre">404</span></code> if item was not found</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api_item_routes.api_item_get_dynamic">
+<span class="sig-prename descclassname"><span class="pre">api_item_routes.</span></span><span class="sig-name descname"><span class="pre">api_item_get_dynamic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api_item_routes.api_item_get_dynamic" title="Permalink to this definition"></a></dt>
+<dd><p>Get a single inventory item by item ID. Route URL is mutable by item ID (dynamic).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>GET /api/item/get?item_id=&lt;item_id&gt;
+POST /api/item/get [&lt;item_id&gt;]
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><code class="docutils literal notranslate"><span class="pre">200</span></code> on success with the desired <a class="reference internal" href="models.html#models.Item" title="models.Item"><code class="xref py py-class docutils literal notranslate"><span class="pre">models.Item</span></code></a>,</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if item ID was not found,</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if item ID was malformed,</p>
+<p><code class="docutils literal notranslate"><span class="pre">404</span></code> if item was not found,</p>
+<p><code class="docutils literal notranslate"><span class="pre">500</span></code> if item ID was not the expected length</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api_item_routes.api_item_create">
+<span class="sig-prename descclassname"><span class="pre">api_item_routes.</span></span><span class="sig-name descname"><span class="pre">api_item_create</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api_item_routes.api_item_create" title="Permalink to this definition"></a></dt>
+<dd><p>Create an inventory item with provided attributes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">item</span><span class="o">/</span><span class="n">create</span> <span class="p">[</span><span class="o">*&lt;</span><span class="n">item_attributes</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">api_key</span><span class="o">&gt;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>All item attributes are required as listed:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">box_id:</span></code> <a class="reference internal" href="models.html#identifier.Identifier" title="identifier.Identifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">identifier.Identifier</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mfg_part_number:</span> <span class="pre">str</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quantity:</span> <span class="pre">int</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">description:</span> <span class="pre">str</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">digikey_part_number:</span> <span class="pre">str</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mouser_part_number:</span> <span class="pre">str</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jlcpcb_part_number:</span> <span class="pre">str</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>Item ID will be generated programmatically and returned in the success model.</p>
+<p>Requires authentication scope <a class="reference internal" href="auth.html#auth.Scope.ITEM_CREATE" title="auth.Scope.ITEM_CREATE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">auth.Scope.ITEM_CREATE</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><code class="docutils literal notranslate"><span class="pre">200</span></code> on success with the created <a class="reference internal" href="models.html#models.Item" title="models.Item"><code class="xref py py-class docutils literal notranslate"><span class="pre">models.Item</span></code></a>,</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if API key was malformed,</p>
+<p><code class="docutils literal notranslate"><span class="pre">401</span></code> if API key was invalid,</p>
+<p><code class="docutils literal notranslate"><span class="pre">403</span></code> if user does not have required scope,</p>
+<p><code class="docutils literal notranslate"><span class="pre">404</span></code> if user was not found,</p>
+<p><code class="docutils literal notranslate"><span class="pre">404</span></code> if any item parameter was malformed,</p>
+<p><code class="docutils literal notranslate"><span class="pre">500</span></code> if any other error while authenticating</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api_item_routes.api_item_update">
+<span class="sig-prename descclassname"><span class="pre">api_item_routes.</span></span><span class="sig-name descname"><span class="pre">api_item_update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api_item_routes.api_item_update" title="Permalink to this definition"></a></dt>
+<dd><p>Update one or more attributes on a single inventory item, identified by item ID.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">item</span><span class="o">/</span><span class="n">update</span> <span class="p">[</span><span class="o">*&lt;</span><span class="n">item_attributes</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">item_id</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">api_key</span><span class="o">&gt;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Available attributes to update/modify are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">box_id:</span></code> <a class="reference internal" href="models.html#identifier.Identifier" title="identifier.Identifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">identifier.Identifier</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mfg_part_number:</span> <span class="pre">str</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quantity:</span> <span class="pre">int</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">description:</span> <span class="pre">str</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">digikey_part_number:</span> <span class="pre">str</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mouser_part_number:</span> <span class="pre">str</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jlcpcb_part_number:</span> <span class="pre">str</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>At least one attribute must be updated, though updating more than one is supported.
+Item IDs and creation user/time cannot be updated. Items must be removed and re-created to change these attributes.</p>
+<p>Requires authentication scope <a class="reference internal" href="auth.html#auth.Scope.ITEM_UPDATE" title="auth.Scope.ITEM_UPDATE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">auth.Scope.ITEM_UPDATE</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><code class="docutils literal notranslate"><span class="pre">200</span></code> on success with the updated <a class="reference internal" href="models.html#models.Item" title="models.Item"><code class="xref py py-class docutils literal notranslate"><span class="pre">models.Item</span></code></a>,</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if no attributes to update were provided,</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if item ID was malformed,</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if API key was malformed,</p>
+<p><code class="docutils literal notranslate"><span class="pre">401</span></code> if API key was invalid,</p>
+<p><code class="docutils literal notranslate"><span class="pre">403</span></code> if user does not have required scope,</p>
+<p><code class="docutils literal notranslate"><span class="pre">404</span></code> if item was not found before updating,</p>
+<p><code class="docutils literal notranslate"><span class="pre">404</span></code> if item was not found after updating,</p>
+<p><code class="docutils literal notranslate"><span class="pre">500</span></code> if any other error while authenticating</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api_item_routes.api_item_remove">
+<span class="sig-prename descclassname"><span class="pre">api_item_routes.</span></span><span class="sig-name descname"><span class="pre">api_item_remove</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api_item_routes.api_item_remove" title="Permalink to this definition"></a></dt>
+<dd><p>Remove a single inventory item, identified by item ID.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">item</span><span class="o">/</span><span class="n">remove</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">item_id</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">api_key</span><span class="o">&gt;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Requires authentication scope <a class="reference internal" href="auth.html#auth.Scope.ITEM_REMOVE" title="auth.Scope.ITEM_REMOVE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">auth.Scope.ITEM_REMOVE</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><code class="docutils literal notranslate"><span class="pre">200</span></code> on success with the removed <a class="reference internal" href="models.html#models.Item" title="models.Item"><code class="xref py py-class docutils literal notranslate"><span class="pre">models.Item</span></code></a>,</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if item ID was malformed,</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if API key was malformed,</p>
+<p><code class="docutils literal notranslate"><span class="pre">401</span></code> if API key was invalid,</p>
+<p><code class="docutils literal notranslate"><span class="pre">403</span></code> if user does not have required scope,</p>
+<p><code class="docutils literal notranslate"><span class="pre">404</span></code> if item was not found,</p>
+<p><code class="docutils literal notranslate"><span class="pre">500</span></code> if more than one item was found,</p>
+<p><code class="docutils literal notranslate"><span class="pre">500</span></code> if any other error while authenticating</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api_item_routes.api_items_list">
+<span class="sig-prename descclassname"><span class="pre">api_item_routes.</span></span><span class="sig-name descname"><span class="pre">api_items_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api_item_routes.api_items_list" title="Permalink to this definition"></a></dt>
+<dd><p>List one or more inventory items with optional ordering.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>GET /api/items/list?sortby={*&lt;item_attributes&gt;}&amp;direction={ASC,DESC}&amp;limit=&lt;limit&gt;&amp;offset=&lt;offset&gt;
+POST /api/items/list [sortby={*&lt;item_attributes&gt;}, &lt;direction={ASC,DESC}&gt;, &lt;limit&gt;, &lt;offset&gt;]
+</pre></div>
+</div>
+<p>Available (all optional) parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">sortby</span></code>: the name of any attribute in <a class="reference internal" href="models.html#models.Item" title="models.Item"><code class="xref py py-class docutils literal notranslate"><span class="pre">models.Item</span></code></a> (as a string).                Results will then be sorted based based on this column. No sorting by default.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">direction</span></code>: either <code class="docutils literal notranslate"><span class="pre">ASC</span></code> to sort the results in ascending order                or <code class="docutils literal notranslate"><span class="pre">DESC</span></code> to sort the results in descending order. <code class="docutils literal notranslate"><span class="pre">ASC</span></code> by default.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">limit</span></code>: the (maximum) number of returned items. <a class="reference internal" href="misc.html#common.RET_ENTITIES_DEF_LIMIT" title="common.RET_ENTITIES_DEF_LIMIT"><code class="xref py py-data docutils literal notranslate"><span class="pre">common.RET_ENTITIES_DEF_LIMIT</span></code></a> default,                up to a maximum of <a class="reference internal" href="misc.html#common.RET_ENTITIES_MAX_LIMIT" title="common.RET_ENTITIES_MAX_LIMIT"><code class="xref py py-data docutils literal notranslate"><span class="pre">common.RET_ENTITIES_MAX_LIMIT</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">offset</span></code>: the index offset within the database to respond with. 0 by default.</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><code class="docutils literal notranslate"><span class="pre">200</span></code> on success with a list of <a class="reference internal" href="models.html#models.Item" title="models.Item"><code class="xref py py-class docutils literal notranslate"><span class="pre">models.Item</span></code></a> s,</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if any sorting attributes were malformed,</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if <code class="docutils literal notranslate"><span class="pre">sortby</span></code> is present and is not a valid sort key,</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if <code class="docutils literal notranslate"><span class="pre">direction</span></code> is not <code class="docutils literal notranslate"><span class="pre">ASC</span></code> or <code class="docutils literal notranslate"><span class="pre">DESC</span></code>,</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if <code class="docutils literal notranslate"><span class="pre">limit</span></code> is not an integer (digit string),</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if <code class="docutils literal notranslate"><span class="pre">offset</span></code> is not an integer (digit string)</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 

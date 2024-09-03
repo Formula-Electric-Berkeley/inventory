@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -15,9 +15,9 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=01f34227"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=2389946f"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -47,7 +47,31 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="models.html">API Models</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Authentication</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Authentication</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#auth.Scope"><code class="docutils literal notranslate"><span class="pre">Scope</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.ITEM_GET"><code class="docutils literal notranslate"><span class="pre">Scope.ITEM_GET</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.ITEM_CREATE"><code class="docutils literal notranslate"><span class="pre">Scope.ITEM_CREATE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.ITEM_UPDATE"><code class="docutils literal notranslate"><span class="pre">Scope.ITEM_UPDATE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.ITEM_REMOVE"><code class="docutils literal notranslate"><span class="pre">Scope.ITEM_REMOVE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.ITEMS_LIST"><code class="docutils literal notranslate"><span class="pre">Scope.ITEMS_LIST</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.RESERVATION_GET"><code class="docutils literal notranslate"><span class="pre">Scope.RESERVATION_GET</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.RESERVATION_CREATE"><code class="docutils literal notranslate"><span class="pre">Scope.RESERVATION_CREATE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.RESERVATION_UPDATE"><code class="docutils literal notranslate"><span class="pre">Scope.RESERVATION_UPDATE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.RESERVATION_REMOVE"><code class="docutils literal notranslate"><span class="pre">Scope.RESERVATION_REMOVE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.RESERVATIONS_LIST"><code class="docutils literal notranslate"><span class="pre">Scope.RESERVATIONS_LIST</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.USER_GET"><code class="docutils literal notranslate"><span class="pre">Scope.USER_GET</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.USER_CREATE"><code class="docutils literal notranslate"><span class="pre">Scope.USER_CREATE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.USER_UPDATE"><code class="docutils literal notranslate"><span class="pre">Scope.USER_UPDATE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.USER_REMOVE"><code class="docutils literal notranslate"><span class="pre">Scope.USER_REMOVE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.BOX_GET"><code class="docutils literal notranslate"><span class="pre">Scope.BOX_GET</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.BOX_CREATE"><code class="docutils literal notranslate"><span class="pre">Scope.BOX_CREATE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.BOX_UPDATE"><code class="docutils literal notranslate"><span class="pre">Scope.BOX_UPDATE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.BOX_REMOVE"><code class="docutils literal notranslate"><span class="pre">Scope.BOX_REMOVE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#auth.Scope.BOXES_LIST"><code class="docutils literal notranslate"><span class="pre">Scope.BOXES_LIST</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api-item.html">Item API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api-user.html">User API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api-reservation.html">Reservation API</a></li>
@@ -79,8 +103,120 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="authentication">
-<h1>Authentication<a class="headerlink" href="#authentication" title="Link to this heading"></a></h1>
+  <section id="module-auth">
+<span id="authentication"></span><h1>Authentication<a class="headerlink" href="#module-auth" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="auth.Scope">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">auth.</span></span><span class="sig-name descname"><span class="pre">Scope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#auth.Scope" title="Permalink to this definition"></a></dt>
+<dd><p>Authentication scopes required for each API route.</p>
+<p>Each user stores an <code class="docutils literal notranslate"><span class="pre">authmask</span></code> composite of scopes such that they may access
+any combination of API routes and access may be modified after user creation.</p>
+<p>Authentication scopes are NOT hierarchical, i.e. higher flag values do not
+include permissions inherited from lower values.</p>
+<p>Each enum int flag value evaluates to powers of two, ascending with ordinal.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>See: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.auto">https://docs.python.org/3/library/enum.html#enum.auto</a></p></li>
+<li><p>See: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.IntFlag">https://docs.python.org/3/library/enum.html#enum.IntFlag</a></p></li>
+</ul>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.ITEM_GET">
+<span class="sig-name descname"><span class="pre">ITEM_GET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#auth.Scope.ITEM_GET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.ITEM_CREATE">
+<span class="sig-name descname"><span class="pre">ITEM_CREATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#auth.Scope.ITEM_CREATE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.ITEM_UPDATE">
+<span class="sig-name descname"><span class="pre">ITEM_UPDATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#auth.Scope.ITEM_UPDATE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.ITEM_REMOVE">
+<span class="sig-name descname"><span class="pre">ITEM_REMOVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#auth.Scope.ITEM_REMOVE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.ITEMS_LIST">
+<span class="sig-name descname"><span class="pre">ITEMS_LIST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="headerlink" href="#auth.Scope.ITEMS_LIST" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.RESERVATION_GET">
+<span class="sig-name descname"><span class="pre">RESERVATION_GET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32</span></em><a class="headerlink" href="#auth.Scope.RESERVATION_GET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.RESERVATION_CREATE">
+<span class="sig-name descname"><span class="pre">RESERVATION_CREATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">64</span></em><a class="headerlink" href="#auth.Scope.RESERVATION_CREATE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.RESERVATION_UPDATE">
+<span class="sig-name descname"><span class="pre">RESERVATION_UPDATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">128</span></em><a class="headerlink" href="#auth.Scope.RESERVATION_UPDATE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.RESERVATION_REMOVE">
+<span class="sig-name descname"><span class="pre">RESERVATION_REMOVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">256</span></em><a class="headerlink" href="#auth.Scope.RESERVATION_REMOVE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.RESERVATIONS_LIST">
+<span class="sig-name descname"><span class="pre">RESERVATIONS_LIST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">512</span></em><a class="headerlink" href="#auth.Scope.RESERVATIONS_LIST" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.USER_GET">
+<span class="sig-name descname"><span class="pre">USER_GET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1024</span></em><a class="headerlink" href="#auth.Scope.USER_GET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.USER_CREATE">
+<span class="sig-name descname"><span class="pre">USER_CREATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2048</span></em><a class="headerlink" href="#auth.Scope.USER_CREATE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.USER_UPDATE">
+<span class="sig-name descname"><span class="pre">USER_UPDATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4096</span></em><a class="headerlink" href="#auth.Scope.USER_UPDATE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.USER_REMOVE">
+<span class="sig-name descname"><span class="pre">USER_REMOVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8192</span></em><a class="headerlink" href="#auth.Scope.USER_REMOVE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.BOX_GET">
+<span class="sig-name descname"><span class="pre">BOX_GET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16384</span></em><a class="headerlink" href="#auth.Scope.BOX_GET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.BOX_CREATE">
+<span class="sig-name descname"><span class="pre">BOX_CREATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32768</span></em><a class="headerlink" href="#auth.Scope.BOX_CREATE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.BOX_UPDATE">
+<span class="sig-name descname"><span class="pre">BOX_UPDATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">65536</span></em><a class="headerlink" href="#auth.Scope.BOX_UPDATE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.BOX_REMOVE">
+<span class="sig-name descname"><span class="pre">BOX_REMOVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">131072</span></em><a class="headerlink" href="#auth.Scope.BOX_REMOVE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="auth.Scope.BOXES_LIST">
+<span class="sig-name descname"><span class="pre">BOXES_LIST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">262144</span></em><a class="headerlink" href="#auth.Scope.BOXES_LIST" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 

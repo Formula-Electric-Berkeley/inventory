@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -15,9 +15,9 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=01f34227"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=2389946f"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -79,17 +79,59 @@
            <div itemprop="articleBody">
              
   <section id="feb-inventory-api-documentation">
-<h1>FEB Inventory API Documentation<a class="headerlink" href="#feb-inventory-api-documentation" title="Link to this heading"></a></h1>
+<h1>FEB Inventory API Documentation<a class="headerlink" href="#feb-inventory-api-documentation" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="models.html">API Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auth.html">Authentication</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api-item.html">Item API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api-user.html">User API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api-reservation.html">Reservation API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api-box.html">Box API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">API Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="models.html#models.Item"><code class="docutils literal notranslate"><span class="pre">Item</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#models.User"><code class="docutils literal notranslate"><span class="pre">User</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#models.Reservation"><code class="docutils literal notranslate"><span class="pre">Reservation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#models.Box"><code class="docutils literal notranslate"><span class="pre">Box</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="models.html#identifier.Identifier"><code class="docutils literal notranslate"><span class="pre">Identifier</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="auth.html">Authentication</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="auth.html#auth.Scope"><code class="docutils literal notranslate"><span class="pre">Scope</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api-item.html">Item API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api-item.html#api_item_routes.api_item_get_static"><code class="docutils literal notranslate"><span class="pre">api_item_get_static()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-item.html#api_item_routes.api_item_get_dynamic"><code class="docutils literal notranslate"><span class="pre">api_item_get_dynamic()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-item.html#api_item_routes.api_item_create"><code class="docutils literal notranslate"><span class="pre">api_item_create()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-item.html#api_item_routes.api_item_update"><code class="docutils literal notranslate"><span class="pre">api_item_update()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-item.html#api_item_routes.api_item_remove"><code class="docutils literal notranslate"><span class="pre">api_item_remove()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-item.html#api_item_routes.api_items_list"><code class="docutils literal notranslate"><span class="pre">api_items_list()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api-user.html">User API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api-user.html#api_user_routes.api_user_get"><code class="docutils literal notranslate"><span class="pre">api_user_get()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-user.html#api_user_routes.api_user_create"><code class="docutils literal notranslate"><span class="pre">api_user_create()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-user.html#api_user_routes.api_user_update"><code class="docutils literal notranslate"><span class="pre">api_user_update()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-user.html#api_user_routes.api_user_remove"><code class="docutils literal notranslate"><span class="pre">api_user_remove()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api-reservation.html">Reservation API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api-reservation.html#api_reservation_routes.api_reservation_get"><code class="docutils literal notranslate"><span class="pre">api_reservation_get()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-reservation.html#api_reservation_routes.api_reservation_create"><code class="docutils literal notranslate"><span class="pre">api_reservation_create()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-reservation.html#api_reservation_routes.api_reservation_update"><code class="docutils literal notranslate"><span class="pre">api_reservation_update()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-reservation.html#api_reservation_routes.api_reservation_remove"><code class="docutils literal notranslate"><span class="pre">api_reservation_remove()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-reservation.html#api_reservation_routes.api_reservations_list"><code class="docutils literal notranslate"><span class="pre">api_reservations_list()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api-box.html">Box API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api-box.html#api_box_routes.api_box_get"><code class="docutils literal notranslate"><span class="pre">api_box_get()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-box.html#api_box_routes.api_box_create"><code class="docutils literal notranslate"><span class="pre">api_box_create()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-box.html#api_box_routes.api_box_update"><code class="docutils literal notranslate"><span class="pre">api_box_update()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-box.html#api_box_routes.api_box_remove"><code class="docutils literal notranslate"><span class="pre">api_box_remove()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-box.html#api_box_routes.api_boxes_list"><code class="docutils literal notranslate"><span class="pre">api_boxes_list()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="misc.html#common.RET_ENTITIES_DEF_LIMIT"><code class="docutils literal notranslate"><span class="pre">RET_ENTITIES_DEF_LIMIT</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.html#common.RET_ENTITIES_MAX_LIMIT"><code class="docutils literal notranslate"><span class="pre">RET_ENTITIES_MAX_LIMIT</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
