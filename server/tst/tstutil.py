@@ -3,6 +3,7 @@ import secrets
 import sqlite3
 import unittest
 from typing import Any
+from typing import Dict
 from typing import Optional
 from typing import Type
 
@@ -27,7 +28,7 @@ class TestBase(unittest.TestCase):
         self.ctx.pop()
         # Drop tables in setUp so output is preserved for analysis
 
-    def call_route_assert_code(self, status_code: int, attrs: Optional[dict[str, Any]] = None, err_msg: str = None):
+    def call_route_assert_code(self, status_code: int, attrs: Optional[Dict[str, Any]] = None, err_msg: str = None):
         resp = self.call_route(attrs)
         self.assertEqual(status_code, resp.status_code, resp.data)
         resp_json = json.loads(resp.data)
@@ -42,7 +43,7 @@ class TestBase(unittest.TestCase):
             self.assertEqual(err_msg, err_json['description'])
         return resp_json
 
-    def assert_single_entity(self, resp_json, expected: dict[str, str]):
+    def assert_single_entity(self, resp_json, expected: Dict[str, str]):
         self.assertIn('body', resp_json)
         self.assertIsNotNone(resp_json['body'])
         self.assertEqual(1, len(resp_json['body']))
@@ -56,7 +57,7 @@ class TestBase(unittest.TestCase):
     def test_200(self):
         raise NotImplementedError()
 
-    def call_route(self, attrs: dict[str, str]):
+    def call_route(self, attrs: Dict[str, str]):
         raise NotImplementedError()
 
 
@@ -78,7 +79,7 @@ class AuthorizedTests:
         self.call_route_assert_code(401, attrs, 'User was not found')
 
     def test_403_user_unauthorized(self):
-        all_scopes = list(auth.Scope._member_names_)
+        all_scopes = list(auth.Scope.__members__.keys())
         all_scopes.remove(self.scope.name)
         for scope_str in all_scopes:
             scope = auth.Scope[scope_str]

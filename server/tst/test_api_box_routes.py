@@ -1,5 +1,6 @@
 import json
 import unittest
+from typing import Dict
 from typing import Optional
 
 import auth
@@ -45,7 +46,7 @@ class TestBoxCreate(tstutil.TestBase, tstutil.AuthorizedTests):
         self.call_route_assert_code(200, attrs)
         self.call_route_assert_code(400, attrs)
 
-    def call_route(self, attrs: Optional[dict[str, str]] = None):
+    def call_route(self, attrs: Optional[Dict[str, str]] = None):
         return self.client.post('/api/box/create', data=attrs)
 
 
@@ -73,7 +74,7 @@ class TestBoxGet(tstutil.TestBase, tstutil.IdTests):
             },
         )
 
-    def call_route(self, attrs: dict[str, str]):
+    def call_route(self, attrs: Dict[str, str]):
         return self.client.post('/api/box/get', data=attrs)
 
 
@@ -96,7 +97,7 @@ class TestBoxUpdate(tstutil.TestBase, tstutil.AuthorizedTests, tstutil.IdTests):
     def test_400_malformed_update_properties(self):
         pass
 
-    def call_route(self, attrs: dict[str, str]):
+    def call_route(self, attrs: Dict[str, str]):
         return self.client.post('/api/box/update', data=attrs)
 
 
@@ -113,7 +114,7 @@ class TestBoxRemove(tstutil.TestBase, tstutil.AuthorizedTests, tstutil.IdTests):
     def test_500_duplicate_id(self):
         pass
 
-    def call_route(self, attrs: dict[str, str]):
+    def call_route(self, attrs: Dict[str, str]):
         return self.client.post('/api/box/remove', data=attrs)
 
 
@@ -136,7 +137,7 @@ class TestBoxesList(tstutil.TestBase):
     def test_400_invalid_sort_key(self):
         pass
 
-    def call_route(self, attrs: dict[str, str]):
+    def call_route(self, attrs: Dict[str, str]):
         return self.client.post('/api/boxes/list', data=attrs)
 
 

@@ -1,1 +1,1 @@
-# inventory-prototype server
+# inventory server

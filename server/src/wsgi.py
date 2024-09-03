@@ -8,8 +8,9 @@ from api_box_routes import api_box_blueprint
 from api_item_routes import api_item_blueprint
 from api_reservation_routes import api_reservation_blueprint
 from api_user_routes import api_user_blueprint
-from werkzeug.exceptions import HTTPException
 from flask_cors import CORS
+from werkzeug.exceptions import HTTPException
+
 
 def _create_table(entity_type: Type[models.Model]):
     model_keys = models.get_entity_parameters(entity_type).items()

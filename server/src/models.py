@@ -2,6 +2,7 @@ import inspect
 import time
 from typing import Any
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Type
 
@@ -10,11 +11,11 @@ from identifier import Identifier
 
 
 class Model:
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         # TODO documentation
         return vars(self)
 
-    def to_response(self) -> dict[str, Any]:
+    def to_response(self) -> Dict[str, Any]:
         # TODO documentation
         return common.create_response(200, self.to_dict())
 
@@ -130,13 +131,13 @@ class EntityCacheKey:
 
 class EntityCache:
     def __init__(self):
-        self._map: Dict[EntityCacheKey, list[Model]] = {}
+        self._map: Dict[EntityCacheKey, List[Model]] = {}
 
-    def add(self, key: EntityCacheKey, entities: list[Model]) -> None:
+    def add(self, key: EntityCacheKey, entities: List[Model]) -> None:
         if len(entities) > 0:
             self._map[key] = entities
 
-    def get(self, key: EntityCacheKey) -> Optional[list[Model]]:
+    def get(self, key: EntityCacheKey) -> Optional[List[Model]]:
         for k in self._map.copy():
             if k.expiry_time > time.time():
                 self._map.pop(k)
@@ -146,13 +147,13 @@ class EntityCache:
         return None
 
     @staticmethod
-    def cut(entities: list[Model], limit: int, offset: int):
+    def cut(entities: List[Model], limit: int, offset: int):
         start_idx = max(min(offset, len(entities)), 0)
         end_idx = min(offset + limit, len(entities))
         return entities[start_idx:end_idx]
 
 
-def get_entity_parameters(entity_type: Type[Model]) -> dict[str, Any]:
+def get_entity_parameters(entity_type: Type[Model]) -> Dict[str, Any]:
     raw_params = inspect.signature(entity_type.__init__).parameters
     dict_params = dict(raw_params)
     dict_params.pop('self')

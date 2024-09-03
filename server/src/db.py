@@ -1,6 +1,7 @@
 # TODO documentation
 from sqlite3.dbapi2 import Connection
 from sqlite3.dbapi2 import Cursor
+from typing import List
 from typing import Type
 
 import auth
@@ -22,7 +23,7 @@ def get(id_: str, entity_type: Type[models.Model]):
     return entity.to_response()
 
 
-def update(entity_type: Type[models.Model], immutable_props: list[str]):
+def update(entity_type: Type[models.Model], immutable_props: List[str]):
     # TODO documentation
     form = common.FlaskPOSTForm(flask.request.form)
     conn, cursor = common.get_db_connection()
@@ -83,7 +84,6 @@ _list_cache = models.EntityCache()
 
 def list_(entity_type: Type[models.Model]):
     # TODO documentation
-    # TODO add a search functionality option to this too
     conn, cursor = common.get_db_connection()
 
     # If GET use query parameters, else if POST use form data

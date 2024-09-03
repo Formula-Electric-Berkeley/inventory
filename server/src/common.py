@@ -3,6 +3,7 @@ import re
 import sqlite3
 import time
 import typing
+from typing import List
 from typing import Union
 
 import flask
@@ -49,7 +50,7 @@ def time_ms() -> int:
     return int(time.time_ns() * 1e-6)
 
 
-def create_response(code: int, body: Union[list[dict], dict]) -> dict:
+def create_response(code: int, body: Union[List[dict], dict]) -> dict:
     if not isinstance(body, list):
         body = [body]
     return {
