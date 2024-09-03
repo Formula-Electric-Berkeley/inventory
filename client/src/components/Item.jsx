@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { faArrowLeft, faMicrochip } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faMicrochip, faTrash } from '@fortawesome/free-solid-svg-icons'
 
 const Item = () => {
     const { itemId } = useParams();
@@ -34,6 +34,25 @@ const Item = () => {
         window.location.href = '/'
     }
 
+    const handleDeleteItem = () => {
+        if (confirm("Are you sure you want to delete this item?\nThis action cannot be undone.")) {
+            const formdata = new FormData();
+            formdata.append("item_id", itemId);
+            formdata.append("api_key", "636e0c5c873afcef9a6fa5996edc9c8da49891b7b1ffbdb1720221ccf1e0e184");
+
+            const requestOptions = {
+                method: "POST",
+                body: formdata,
+                redirect: "follow"
+            };
+
+            fetch(`${window.env.REACT_APP_API_URL}/api/item/remove`, requestOptions)
+                .then((response) => response.text())
+                .then(() => window.location.href = '/')
+                .catch((error) => alert(error));
+        }
+    }
+
     if (error === 'Not Found') {
         return (
             <div className='w-full flex justify-center mt-20'>
@@ -48,6 +67,9 @@ const Item = () => {
             <div className='flex justify-center'>
                 <span onClick={handleArrowOnClick}>
                     <FontAwesomeIcon className="fixed top-4 left-4 size-10 cursor-pointer" icon={faArrowLeft} />
+                </span>
+                <span onClick={handleDeleteItem}>
+                    <FontAwesomeIcon className="fixed top-4 right-4 size-10 cursor-pointer hover:text-red-500 transition" icon={faTrash} />
                 </span>
                 <div className="text-center w-[1000px]">
                     <h1 className="text-4xl font-semibold my-10">{itemData.description}</h1>
