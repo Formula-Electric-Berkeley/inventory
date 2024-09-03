@@ -58,11 +58,11 @@ def api_reservation_update():
     )
 
 
-@api_reservation_blueprint.route('/api/reservation/remove', methods=['POST'])
-@auth.route_requires_auth(auth.Scope.RESERVATION_REMOVE)
-def api_reservation_remove():
+@api_reservation_blueprint.route('/api/reservation/delete', methods=['POST'])
+@auth.route_requires_auth(auth.Scope.RESERVATION_DELETE)
+def api_reservation_delete():
     # TODO documentation
-    return db.remove(entity_type=models.Reservation)
+    return db.delete(entity_type=models.Reservation)
 
 
 @api_reservation_blueprint.route('/api/reservations/list', methods=['GET', 'POST'])

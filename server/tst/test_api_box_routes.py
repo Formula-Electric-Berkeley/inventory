@@ -101,8 +101,8 @@ class TestBoxUpdate(tstutil.TestBase, tstutil.AuthorizedTests, tstutil.IdTests):
         return self.client.post('/api/box/update', data=attrs)
 
 
-class TestBoxRemove(tstutil.TestBase, tstutil.AuthorizedTests, tstutil.IdTests):
-    scope = auth.Scope.BOX_REMOVE
+class TestBoxDelete(tstutil.TestBase, tstutil.AuthorizedTests, tstutil.IdTests):
+    scope = auth.Scope.BOX_DELETE
     entity_type = models.Box
 
     def test_200(self):
@@ -115,7 +115,7 @@ class TestBoxRemove(tstutil.TestBase, tstutil.AuthorizedTests, tstutil.IdTests):
         pass
 
     def call_route(self, attrs: Dict[str, str]):
-        return self.client.post('/api/box/remove', data=attrs)
+        return self.client.post('/api/box/delete', data=attrs)
 
 
 class TestBoxesList(tstutil.TestBase):

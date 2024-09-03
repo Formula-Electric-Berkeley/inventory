@@ -1,5 +1,5 @@
 """
-The Item API can create, get, update, remove, and list inventory item(s).
+The Item API can create, get, update, delete, and list inventory item(s).
 
 All routes except item retrieval require authentication, which is handled by :py:mod:`auth`.
 Idempotent routes use the ``GET`` method while non-idempotent routes use ``POST``.
@@ -125,7 +125,7 @@ def api_item_update():
         * ``jlcpcb_part_number: str``
 
     At least one attribute must be updated, though updating more than one is supported.
-    Item IDs and creation user/time cannot be updated. Items must be removed and re-created to change these attributes.
+    Item IDs and creation user/time cannot be updated. Items must be deleted and re-created to change these attributes.
 
     Requires authentication scope :py:attr:`auth.Scope.ITEM_UPDATE`
 
@@ -149,17 +149,17 @@ def api_item_update():
     )
 
 
-@api_item_blueprint.route('/api/item/remove', methods=['POST'])
-@auth.route_requires_auth(auth.Scope.ITEM_REMOVE)
-def api_item_remove():
+@api_item_blueprint.route('/api/item/delete', methods=['POST'])
+@auth.route_requires_auth(auth.Scope.ITEM_DELETE)
+def api_item_delete():
     """
-    Remove a single inventory item, identified by item ID. ::
+    Delete a single inventory item, identified by item ID. ::
 
-        POST /api/item/remove [<item_id>, <api_key>]
+        POST /api/item/delete [<item_id>, <api_key>]
 
-    Requires authentication scope :py:attr:`auth.Scope.ITEM_REMOVE`
+    Requires authentication scope :py:attr:`auth.Scope.ITEM_DELETE`
 
-    :return: ``200`` on success with the removed :py:class:`models.Item`,\n
+    :return: ``200`` on success with the deleted :py:class:`models.Item`,\n
              ``400`` if item ID was malformed,\n
              ``400`` if API key was malformed,\n
              ``401`` if API key was invalid,\n
@@ -168,7 +168,7 @@ def api_item_remove():
              ``500`` if more than one item was found,\n
              ``500`` if any other error while authenticating
     """
-    return db.remove(entity_type=models.Item)
+    return db.delete(entity_type=models.Item)
 
 
 @api_item_blueprint.route('/api/items/list', methods=['GET', 'POST'])

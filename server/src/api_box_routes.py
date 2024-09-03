@@ -1,5 +1,5 @@
 """
-The Box API can create, get, update, remove, and list boxes which store inventory items.
+The Box API can create, get, update, delete, and list boxes which store inventory items.
 
 Note that inventory "boxes" store item entries, each of which represents a real "container".
 Containers are typically bags, but may be boxes (not inventory boxes though) in some cases.
@@ -113,17 +113,17 @@ def api_box_update():
     )
 
 
-@api_box_blueprint.route('/api/box/remove', methods=['POST'])
-@auth.route_requires_auth(auth.Scope.BOX_REMOVE)
-def api_box_remove():
+@api_box_blueprint.route('/api/box/delete', methods=['POST'])
+@auth.route_requires_auth(auth.Scope.BOX_DELETE)
+def api_box_delete():
     """
-    Remove a single inventory box, identified by box ID. ::
+    Delete a single inventory box, identified by box ID. ::
 
-        POST /api/box/remove [<box_id>, <api_key>]
+        POST /api/box/delete [<box_id>, <api_key>]
 
-    Requires authentication scope :py:attr:`auth.Scope.BOX_REMOVE`
+    Requires authentication scope :py:attr:`auth.Scope.BOX_DELETE`
 
-    :return: ``200`` on success with the removed :py:class:`models.Box`,\n
+    :return: ``200`` on success with the deleted :py:class:`models.Box`,\n
              ``400`` if box ID was malformed,\n
              ``400`` if API key was malformed,\n
              ``401`` if API key was invalid,\n
@@ -132,7 +132,7 @@ def api_box_remove():
              ``500`` if more than one box was found,\n
              ``500`` if any other error while authenticating
     """
-    return db.remove(entity_type=models.Box)
+    return db.delete(entity_type=models.Box)
 
 
 @api_box_blueprint.route('/api/boxes/list', methods=['GET', 'POST'])

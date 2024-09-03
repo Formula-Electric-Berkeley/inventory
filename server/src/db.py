@@ -59,7 +59,7 @@ def update(entity_type: Type[models.Model], immutable_props: List[str]) -> Respo
     return updated_entity.to_response()
 
 
-def remove(entity_type: Type[models.Model]) -> Response:
+def delete(entity_type: Type[models.Model]) -> Response:
     # TODO documentation
     form = common.FlaskPOSTForm(flask.request.form)
     conn, cursor = common.get_db_connection()

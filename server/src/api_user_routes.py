@@ -54,8 +54,8 @@ def api_user_update():
     )
 
 
-@api_user_blueprint.route('/api/user/remove', methods=['POST'])
-@auth.route_requires_auth(auth.Scope.USER_REMOVE)
-def api_user_remove():
+@api_user_blueprint.route('/api/user/delete', methods=['POST'])
+@auth.route_requires_auth(auth.Scope.USER_DELETE)
+def api_user_delete():
     # TODO documentation
-    return db.remove(entity_type=models.User)
+    return db.delete(entity_type=models.User)
