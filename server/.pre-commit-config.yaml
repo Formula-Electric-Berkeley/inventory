@@ -1,5 +1,4 @@
 files: 'server/.*'
-exclude: 'server/docs/.*'
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
@@ -48,3 +47,9 @@ repos:
     rev: v1.5.5
     hooks:
       - id: remove-tabs
+  - repo: https://github.com/PyCQA/doc8/
+    rev: v1.1.2
+    hooks:
+      - id: doc8
+        files: 'docs\/source\/.+\.rst'
+        args: ['--ignore', 'D004']

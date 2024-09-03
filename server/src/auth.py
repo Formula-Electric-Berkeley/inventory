@@ -15,6 +15,9 @@ class Scope(enum.IntFlag):
     Each user stores an ``authmask`` composite of scopes such that they may access
     any combination of API routes and access may be modified after user creation.
 
+    Authentication scopes are NOT hierarchical, i.e. higher flag values do not
+    include permissions inherited from lower values.
+
     Each enum int flag value evaluates to powers of two, ascending with ordinal.
 
         * See: https://docs.python.org/3/library/enum.html#enum.auto

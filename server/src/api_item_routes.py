@@ -6,7 +6,7 @@ Idempotent routes use the ``GET`` method while non-idempotent routes use ``POST`
 
 Base Item API endpoint:
     * ``/api/item/`` when the response contains zero or one :py:class:`models.Item`
-    * ``/api/items/`` when the response contains two or more :py:class:`models.Item`s
+    * ``/api/items/`` when the response contains two or more :py:class:`models.Item` s
 """
 import auth
 import common
@@ -43,7 +43,8 @@ def api_item_get_dynamic():
     :return: ``200`` on success with the desired :py:class:`models.Item`,\n
              ``400`` if item ID was not found,\n
              ``400`` if item ID was malformed,\n
-             ``404`` if item was not found
+             ``404`` if item was not found, \n
+             ``500`` if item ID was not the expected length
     """
     # If GET use query parameters, else if POST use form data
     request_parameters = flask.request.form if flask.request.method == 'POST' else flask.request.args
@@ -62,7 +63,7 @@ def api_item_create():
 
     All item attributes are required as listed:
 
-        * ``box_id: str``
+        * ``box_id:`` :py:class:`identifier.Identifier`
         * ``mfg_part_number: str``
         * ``quantity: int``
         * ``description: str``
@@ -115,7 +116,7 @@ def api_item_update():
 
     Available attributes to update/modify are:
 
-        * ``box_id: str``
+        * ``box_id:`` :py:class:`identifier.Identifier`
         * ``mfg_part_number: str``
         * ``quantity: int``
         * ``description: str``
@@ -135,7 +136,7 @@ def api_item_update():
              ``401`` if API key was invalid,\n
              ``403`` if user does not have required scope,\n
              ``404`` if item was not found before updating,\n
-             ``404`` if the item was not found after updating,\n
+             ``404`` if item was not found after updating,\n
              ``500`` if any other error while authenticating
     """
     return db.update(
@@ -175,8 +176,8 @@ def api_items_list():
     """
     List one or more inventory items with optional ordering. ::
 
-        GET /api/item/list?sortby={*<item_attributes>}&direction={ASC,DESC}&limit=<limit>
-        POST /api/item/list [sortby={*<item_attributes>}, <direction={ASC,DESC}>, <limit>]
+        GET /api/items/list?sortby={*<item_attributes>}&direction={ASC,DESC}&limit=<limit>&offset=<offset>
+        POST /api/items/list [sortby={*<item_attributes>}, <direction={ASC,DESC}>, <limit>, <offset>]
 
     Available (all optional) parameters:
 
@@ -184,12 +185,15 @@ def api_items_list():
                 Results will then be sorted based based on this column. No sorting by default.
         * ``direction``: either ``ASC`` to sort the results in ascending order\
                 or ``DESC`` to sort the results in descending order. ``ASC`` by default.
-        * ``limit``: the (maximum) number of returned items. :py:data:`common.RET_ITEMS_LIMIT` at maximum (default).
+        * ``limit``: the (maximum) number of returned items. :py:data:`common.RET_ENTITIES_DEF_LIMIT` default,\
+                up to a maximum of :py:data:`common.RET_ENTITIES_MAX_LIMIT`.
+        * ``offset``: the index offset within the database to respond with. 0 by default.
 
-    :return: ``200`` on success with a list of :py:class:`models.Item`s,\n
+    :return: ``200`` on success with a list of :py:class:`models.Item` s,\n
              ``400`` if any sorting attributes were malformed,\n
              ``400`` if ``sortby`` is present and is not a valid sort key,\n
              ``400`` if ``direction`` is not ``ASC`` or ``DESC``,\n
-             ``400`` if ``limit`` is not an integer (digit string)
+             ``400`` if ``limit`` is not an integer (digit string), \n
+             ``400`` if ``offset`` is not an integer (digit string)
     """
     return db.list_(entity_type=models.Item)

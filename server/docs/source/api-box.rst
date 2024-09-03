@@ -1,7 +1,7 @@
-Item API
-========
+Box API
+=======
 
-.. automodule:: api_item_routes
+.. automodule:: api_box_routes
     :members:
     :undoc-members:
     :member-order: bysource
