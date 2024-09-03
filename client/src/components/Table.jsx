@@ -42,6 +42,10 @@ const Table = () => {
         []
     );
 
+    const routeToItemPage = (params) => {
+        window.location.href = `/item/${params.data.item_id}`;
+    }
+
     return (
         <div>
             <input
@@ -59,6 +63,7 @@ const Table = () => {
                     rowData={rowData}
                     columnDefs={colDefs}
                     quickFilterText={quickFilterText}
+                    onRowClicked={routeToItemPage}
                 />
             </div>
             <div className='w-100 flex justify-end mt-2'>
