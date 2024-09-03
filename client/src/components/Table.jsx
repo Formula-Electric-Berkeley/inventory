@@ -100,10 +100,10 @@ const Table = () => {
                     id="filter-text-box"
                     placeholder="Search Inventory..."
                     onInput={onFilterTextBoxChanged}
-                    className='w-full box-shadow text-left py-2 px-5 rounded-full'
+                    className='w-full border-2 border-black text-left py-2 px-5 rounded-full'
                 />
 
-                <button className='flex items-center border-black border-2 rounded-full ml-2 p-1 hover:bg-gray-300 transition' onClick={handleOpenModal}>
+                <button className='flex items-center border-black border-2 rounded-full ml-4 p-1 hover:bg-gray-300 transition' onClick={handleOpenModal}>
                     <FontAwesomeIcon className='size-6' icon={faPlus} />
                 </button>
             </div>

@@ -51,33 +51,33 @@ const Item = () => {
                 </span>
                 <div className="text-center w-[1000px]">
                     <h1 className="text-4xl font-semibold my-10">{itemData.description}</h1>
-                    <div className="flex justify-center items-center m-auto w-60 h-60 box-shadow rounded-2xl">
+                    <div className="flex justify-center items-center m-auto w-60 h-60 border-2 border-black rounded-2xl">
                         <FontAwesomeIcon className="size-20" icon={faMicrochip} />
                     </div>
                     <div className="flex justify-between w-full mt-10">
-                        <div className="w-64 py-5 box-shadow rounded-2xl">
+                        <div className="w-64 py-5 border-2 border-black rounded-2xl">
                             <h1 className="text-3xl font-bold">{itemData.box_id}</h1>
                             <h1 className="text-xl">Box ID</h1>
                         </div>
-                        <div className="w-64 py-5 box-shadow rounded-2xl">
+                        <div className="w-64 py-5 border-2 border-black rounded-2xl">
                             <h1 className="text-3xl font-bold">{itemData.quantity}</h1>
                             <h1 className="text-xl">Quantity</h1>
                         </div>
-                        <div className="w-64 py-5 box-shadow rounded-2xl">
+                        <div className="w-64 py-5 border-2 border-black rounded-2xl">
                             <h1 className="text-3xl font-bold">{itemData.mfg_part_number}</h1>
                             <h1 className="text-xl">Manufacturer PN</h1>
                         </div>
                     </div>
                     <div className="flex justify-between w-full mt-10">
-                        <div className="w-64 py-5 box-shadow rounded-2xl">
+                        <div className="w-64 py-5 border-2 border-black rounded-2xl">
                             <h1 className="text-3xl font-bold">{itemData.digikey_part_number}</h1>
                             <h1 className="text-xl">DigiKey PN</h1>
                         </div>
-                        <div className="w-64 py-5 box-shadow rounded-2xl">
+                        <div className="w-64 py-5 border-2 border-black rounded-2xl">
                             <h1 className="text-3xl font-bold">{itemData.mouser_part_number}</h1>
                             <h1 className="text-xl">Mouser PN</h1>
                         </div>
-                        <div className="w-64 py-5 box-shadow rounded-2xl">
+                        <div className="w-64 py-5 border-2 border-black rounded-2xl">
                             <h1 className="text-3xl font-bold">{itemData.jlcpcb_part_number}</h1>
                             <h1 className="text-xl">JLCPCB PN</h1>
                         </div>
