@@ -54,6 +54,8 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Miscellaneous</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#common.RET_ENTITIES_DEF_LIMIT"><code class="docutils literal notranslate"><span class="pre">RET_ENTITIES_DEF_LIMIT</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#common.RET_ENTITIES_MAX_LIMIT"><code class="docutils literal notranslate"><span class="pre">RET_ENTITIES_MAX_LIMIT</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common.create_response"><code class="docutils literal notranslate"><span class="pre">create_response()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common.is_dirty"><code class="docutils literal notranslate"><span class="pre">is_dirty()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -94,6 +96,54 @@
 <dt class="sig sig-object py" id="common.RET_ENTITIES_MAX_LIMIT">
 <span class="sig-prename descclassname"><span class="pre">common.</span></span><span class="sig-name descname"><span class="pre">RET_ENTITIES_MAX_LIMIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000</span></em><a class="headerlink" href="#common.RET_ENTITIES_MAX_LIMIT" title="Permalink to this definition"></a></dt>
 <dd><p>Maximum number of returned entities.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="common.create_response">
+<span class="sig-prename descclassname"><span class="pre">common.</span></span><span class="sig-name descname"><span class="pre">create_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#common.create_response" title="Permalink to this definition"></a></dt>
+<dd><p>Create a response from some status code and response body.</p>
+<p>The format of a standard response from any Flask API route is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">number</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="s1">&#39;body&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="o">&lt;</span><span class="n">one</span> <span class="ow">or</span> <span class="n">more</span> <span class="n">of</span> <span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="o">&gt;</span>
+        <span class="o">...</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">See also<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="models.html#models.Model" title="models.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">models.Model</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="common.is_dirty">
+<span class="sig-prename descclassname"><span class="pre">common.</span></span><span class="sig-name descname"><span class="pre">is_dirty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#common.is_dirty" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the passed string contains dangerous characters.</p>
+<p>Permitted characters/character ranges:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Uppercase letters [A-Z]</p></li>
+<li><p>Lowercase letters [a-z]</p></li>
+<li><p>Numbers [0-9]</p></li>
+<li><p>Hyphen (-)</p></li>
+<li><p>Underscore (_)</p></li>
+<li><p>Backslash ()</p></li>
+<li><p>Forward slash (/)</p></li>
+<li><p>Period (.)</p></li>
+<li><p>Comma (,)</p></li>
+<li><p>Equals sign (=)</p></li>
+</ul>
+</div></blockquote>
+<p>All other characters are considered dangerous.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the string contains dangerous characters, else <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

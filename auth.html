@@ -70,6 +70,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#auth.Scope.BOXES_LIST"><code class="docutils literal notranslate"><span class="pre">Scope.BOXES_LIST</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#auth.route_requires_auth"><code class="docutils literal notranslate"><span class="pre">route_requires_auth()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#auth.require_auth"><code class="docutils literal notranslate"><span class="pre">require_auth()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api-item.html">Item API</a></li>
@@ -105,6 +107,7 @@
              
   <section id="module-auth">
 <span id="authentication"></span><h1>Authentication<a class="headerlink" href="#module-auth" title="Permalink to this heading"></a></h1>
+<p>Manages authentication for Flask routes and application contexts.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="auth.Scope">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">auth.</span></span><span class="sig-name descname"><span class="pre">Scope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#auth.Scope" title="Permalink to this definition"></a></dt>
@@ -215,6 +218,52 @@ include permissions inherited from lower values.</p>
 <span class="sig-name descname"><span class="pre">BOXES_LIST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">262144</span></em><a class="headerlink" href="#auth.Scope.BOXES_LIST" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="auth.route_requires_auth">
+<span class="sig-prename descclassname"><span class="pre">auth.</span></span><span class="sig-name descname"><span class="pre">route_requires_auth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#auth.route_requires_auth" title="Permalink to this definition"></a></dt>
+<dd><p>Function decorator for Flask routes which requires authentication
+by a user with the specified <a class="reference internal" href="#auth.Scope" title="auth.Scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">auth.Scope</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">See also<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#auth.require_auth" title="auth.require_auth"><code class="xref py py-func docutils literal notranslate"><span class="pre">auth.require_auth()</span></code></a> for implementation and return details.</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/api/item/create&#39;</span><span class="p">)</span>
+<span class="nd">@auth</span><span class="o">.</span><span class="n">route_requires_auth</span><span class="p">(</span><span class="n">auth</span><span class="o">.</span><span class="n">Scope</span><span class="o">.</span><span class="n">ITEM_CREATE</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">api_item_create</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="auth.require_auth">
+<span class="sig-prename descclassname"><span class="pre">auth.</span></span><span class="sig-name descname"><span class="pre">require_auth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">req_authmask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#auth.Scope" title="auth.Scope"><span class="pre">Scope</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#auth.require_auth" title="Permalink to this definition"></a></dt>
+<dd><p>Require authentication in the current context by a user
+with the specified <a class="reference internal" href="#auth.Scope" title="auth.Scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">auth.Scope</span></code></a> (s), otherwise error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">See also<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#auth.route_requires_auth" title="auth.route_requires_auth"><code class="xref py py-func docutils literal notranslate"><span class="pre">auth.route_requires_auth()</span></code></a> for usage on Flask routes.</p>
+</dd>
+<dt class="field-even">See also<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="api-user.html#api_user_routes.api_user_create" title="api_user_routes.api_user_create"><code class="xref py py-func docutils literal notranslate"><span class="pre">api_user_routes.api_user_create()</span></code></a> for how to create a user</p>
+</dd>
+<dt class="field-odd">See also<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="api-user.html#api_user_routes.api_user_update" title="api_user_routes.api_user_update"><code class="xref py py-func docutils literal notranslate"><span class="pre">api_user_routes.api_user_update()</span></code></a> for how to modify the
+authenticated scopes of an existing user</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><code class="docutils literal notranslate"><span class="pre">None</span></code> if authenticated correctly,</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if API key was malformed,</p>
+<p><code class="docutils literal notranslate"><span class="pre">401</span></code> if API key was invalid,</p>
+<p><code class="docutils literal notranslate"><span class="pre">403</span></code> if user does not have required scope,</p>
+<p><code class="docutils literal notranslate"><span class="pre">500</span></code> if any other error while authenticating</p>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
