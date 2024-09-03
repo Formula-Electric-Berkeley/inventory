@@ -1,1 +1,3 @@
-
+.ag-header-cell-resize {
+    z-index: 0 !important;
+}
