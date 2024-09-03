@@ -1,5 +1,12 @@
+"""
+Defines models for all database entries and associated helpers.
+
+Contains required attribute names and types for each model.
+"""
 import inspect
 import time
+from abc import ABC
+from abc import abstractmethod
 from typing import Any
 from typing import Dict
 from typing import List
@@ -10,42 +17,45 @@ import common
 from identifier import Identifier
 
 
-class Model:
+class Model(ABC):
+    """Parent (abstract) class for all database models which defines common helpers."""
+
     def to_dict(self) -> Dict[str, Any]:
-        # TODO documentation
+        """Get a map of all properties for this model."""
         return vars(self)
 
     def to_response(self) -> Dict[str, Any]:
-        # TODO documentation
+        """Convert this model to a JSON API response."""
         return common.create_response(200, self.to_dict())
 
     def to_insert_str(self) -> str:
-        # TODO documentation
+        """Convert this model to a string which can be INSERTed into an SQL database."""
         model_values = [f"'{v}'" for v in self.to_dict().values()]
         return ', '.join(model_values)
 
     def __str__(self) -> str:
-        # TODO documentation
         return self.to_insert_str()
 
     def __iter__(self):
-        # TODO documentation
         for v in self.to_dict().values():
             yield v
 
     @classmethod
+    @abstractmethod
     def id_name(cls) -> str:
-        # TODO documentation
+        """String name of the ID field for this model. For example, 'item_id' for items."""
         raise NotImplementedError('ID name not implemented')
 
     @classmethod
+    @abstractmethod
     def id_length(cls) -> int:
-        # TODO documentation
+        """Integer representing the expected length of the ID for this model."""
         raise NotImplementedError('ID length not implemented')
 
     @classmethod
+    @abstractmethod
     def table_name(cls) -> str:
-        # TODO documentation
+        """Table name in SQL database where entities for this model are stored."""
         raise NotImplementedError('Table name not implemented')
 
 
@@ -113,6 +123,7 @@ class Box(Model):
 
 
 class EntityCacheKey:
+    # TODO documentation
     def __init__(self, direction: str, sortby: Optional[str], entity_type: Type[Model], ttl_sec: int = 3600):
         self.direction = direction
         self.sortby = sortby
@@ -130,14 +141,37 @@ class EntityCacheKey:
 
 
 class EntityCache:
+    """
+    Simple L1 cache system for lists of entities (models),
+    keyed by :py:class:`EntityCacheKey`.
+
+    Entries are added to the cache with :py:func:`add`
+    and retrieved with :py:func:`get`.
+
+    Entries are automatically evicted after their key's TTL has expired.
+    Expiry time is set when the cache key is created.
+    """
+
     def __init__(self):
         self._map: Dict[EntityCacheKey, List[Model]] = {}
 
     def add(self, key: EntityCacheKey, entities: List[Model]) -> None:
+        """Add an entry (list of entities) to the cache if the entry contains at least 1 entity."""
         if len(entities) > 0:
             self._map[key] = entities
 
     def get(self, key: EntityCacheKey) -> Optional[List[Model]]:
+        """
+        Get an entry (list of entities) matching the provided
+        key from the cache if it exists.
+
+        May expire any number of (zero, one, or multiple) cache
+        entries that are over their expiry TTL. Not guaranteed
+        to expire all expired cache entries.
+
+        :return: an entry (list of entities) if the key matched
+                 a cache entry, else ``None``.
+        """
         for k in self._map.copy():
             if k.expiry_time > time.time():
                 self._map.pop(k)
@@ -148,12 +182,21 @@ class EntityCache:
 
     @staticmethod
     def cut(entities: List[Model], limit: int, offset: int):
+        """
+        Cut a list of entities down using a limit and offset.
+
+        Guarantees the start and indices used for retrieval will
+        be within the bounds of the list of ``entities`` passed.
+
+        :return: ``entities[offset:(limit+offset)]``
+        """
         start_idx = max(min(offset, len(entities)), 0)
         end_idx = min(offset + limit, len(entities))
         return entities[start_idx:end_idx]
 
 
-def get_entity_parameters(entity_type: Type[Model]) -> Dict[str, Any]:
+def get_model_attributes(entity_type: Type[Model]) -> Dict[str, Any]:
+    """Get the names of a :py:class:`Model` 's attributes using inspection."""
     raw_params = inspect.signature(entity_type.__init__).parameters
     dict_params = dict(raw_params)
     dict_params.pop('self')

@@ -21,7 +21,7 @@ class TestBase(unittest.TestCase):
         self.ctx.push()
         self.client = wsgi.app.test_client()
         drop_all_tables()
-        wsgi.create_tables()
+        wsgi._create_tables()
         self.superuser = create_user()
 
     def tearDown(self):

@@ -1,9 +1,13 @@
+"""
+Manages authentication for Flask routes and application contexts.
+"""
 import enum
 from functools import wraps
 
 import common
 import flask
 import models
+
 
 API_KEY_NAME = 'api_key'
 
@@ -45,6 +49,19 @@ class Scope(enum.IntFlag):
 
 
 def route_requires_auth(scope):
+    """
+    Function decorator for Flask routes which requires authentication
+    by a user with the specified :py:class:`auth.Scope`.
+
+    :see also: :py:func:`auth.require_auth` for implementation and return details.
+
+    Example: ::
+
+        @app.route('/api/item/create')
+        @auth.route_requires_auth(auth.Scope.ITEM_CREATE)
+        def api_item_create():
+            ...
+    """
     def for_route(route):
         @wraps(route)
         def execute():
@@ -60,6 +77,21 @@ def route_requires_auth(scope):
 
 
 def require_auth(req_authmask: Scope, api_key: str) -> None:
+    """
+    Require authentication in the current context by a user
+    with the specified :py:class:`auth.Scope` (s), otherwise error.
+
+    :see also: :py:func:`auth.route_requires_auth` for usage on Flask routes.
+    :see also: :py:func:`api_user_routes.api_user_create` for how to create a user
+    :see also: :py:func:`api_user_routes.api_user_update` for how to modify the
+            authenticated scopes of an existing user
+
+    :return: ``None`` if authenticated correctly,\n
+             ``400`` if API key was malformed,\n
+             ``401`` if API key was invalid,\n
+             ``403`` if user does not have required scope,\n
+             ``500`` if any other error while authenticating
+    """
     if isinstance(req_authmask, Scope):
         req_authmask = req_authmask.value
 

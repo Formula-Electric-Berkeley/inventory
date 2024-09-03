@@ -14,7 +14,6 @@ api_user_blueprint = flask.Blueprint('api_user', __name__)
 @auth.route_requires_auth(auth.Scope.USER_GET)
 def api_user_get():
     # TODO documentation
-    # TODO other methods? (opt)
     form = common.FlaskPOSTForm(flask.request.form)
     return db.get(id_=form.get(models.User.id_name), entity_type=models.User)
 

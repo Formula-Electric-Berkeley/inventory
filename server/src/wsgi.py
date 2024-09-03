@@ -13,13 +13,15 @@ from werkzeug.exceptions import HTTPException
 
 
 def _create_table(entity_type: Type[models.Model]):
-    model_keys = models.get_entity_parameters(entity_type).items()
+    # TODO documentation
+    model_keys = models.get_model_attributes(entity_type).items()
     table_keys = ', '.join([f'{k} {"INTEGER" if isinstance(v, int) else "TEXT"}' for k, v in model_keys])
     conn, cursor = common.get_db_connection()
     cursor.execute(f'CREATE TABLE IF NOT EXISTS {entity_type.table_name}({table_keys})').close()
 
 
-def create_tables():
+def _create_tables():
+    # TODO documentation
     with app.app_context():
         _create_table(models.Item)
         _create_table(models.User)
@@ -31,7 +33,7 @@ dotenv.load_dotenv()
 app = flask.Flask(__name__)
 CORS(app)
 
-create_tables()
+_create_tables()
 
 app.register_blueprint(api_item_blueprint)
 app.register_blueprint(api_user_blueprint)
@@ -41,6 +43,7 @@ app.register_blueprint(api_box_blueprint)
 
 @app.teardown_appcontext
 def close_connection(exception):
+    # TODO documentation
     db = getattr(flask.g, '_database', None)
     if db is not None:
         db.close()

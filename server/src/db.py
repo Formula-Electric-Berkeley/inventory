@@ -8,9 +8,10 @@ import auth
 import common
 import flask
 import models
+from common import Response
 
 
-def get(id_: str, entity_type: Type[models.Model]):
+def get(id_: str, entity_type: Type[models.Model]) -> Response:
     # TODO documentation
     if common.is_dirty(id_):
         flask.abort(400, f'{entity_type.id_name} was malformed')
@@ -23,7 +24,7 @@ def get(id_: str, entity_type: Type[models.Model]):
     return entity.to_response()
 
 
-def update(entity_type: Type[models.Model], immutable_props: List[str]):
+def update(entity_type: Type[models.Model], immutable_props: List[str]) -> Response:
     # TODO documentation
     form = common.FlaskPOSTForm(flask.request.form)
     conn, cursor = common.get_db_connection()
@@ -35,8 +36,7 @@ def update(entity_type: Type[models.Model], immutable_props: List[str]):
     if db_entity is None or len(db_entity) == 0 or db_entity == 0:
         flask.abort(404, f'{entity_type.__name__} does not exist')
 
-    # TODO have a better solution for mutability
-    entity_properties = models.get_entity_parameters(entity_type)
+    entity_properties = models.get_model_attributes(entity_type)
     for immutable_prop in immutable_props:
         if immutable_prop in form.form:
             flask.abort(400, f'Immutable property {immutable_prop} found in request body')
@@ -59,7 +59,7 @@ def update(entity_type: Type[models.Model], immutable_props: List[str]):
     return updated_entity.to_response()
 
 
-def remove(entity_type: Type[models.Model]):
+def remove(entity_type: Type[models.Model]) -> Response:
     # TODO documentation
     form = common.FlaskPOSTForm(flask.request.form)
     conn, cursor = common.get_db_connection()
@@ -82,7 +82,7 @@ def remove(entity_type: Type[models.Model]):
 _list_cache = models.EntityCache()
 
 
-def list_(entity_type: Type[models.Model]):
+def list_(entity_type: Type[models.Model]) -> Response:
     # TODO documentation
     conn, cursor = common.get_db_connection()
 
@@ -103,7 +103,7 @@ def list_(entity_type: Type[models.Model]):
         sortby = request_parameters.get('sortby')
         if common.is_dirty(sortby):
             flask.abort(400, 'sortby is malformed')
-        if sortby not in models.get_entity_parameters(entity_type).keys():
+        if sortby not in models.get_model_attributes(entity_type).keys():
             flask.abort(400, f'{sortby} is not a valid sort key')
 
         query = f'SELECT * FROM {entity_type.table_name} ORDER BY {sortby} {direction}'
@@ -125,6 +125,7 @@ def list_(entity_type: Type[models.Model]):
 
 
 def get_int_parameter(key: str, default: int, request_parameters) -> int:
+    # TODO documentation
     value = default
     if key in request_parameters:
         value_raw = request_parameters.get(key)
@@ -139,6 +140,7 @@ def get_int_parameter(key: str, default: int, request_parameters) -> int:
 
 
 def get_request_user_id(cursor: Cursor, form: common.FlaskPOSTForm) -> str:
+    # TODO documentation
     user_query = f'SELECT {models.User.id_name} FROM {models.User.table_name} WHERE {auth.API_KEY_NAME}=?'
     user_res = cursor.execute(user_query, (form.get(auth.API_KEY_NAME),))
     db_user = user_res.fetchone()
@@ -148,7 +150,8 @@ def get_request_user_id(cursor: Cursor, form: common.FlaskPOSTForm) -> str:
     return user_id
 
 
-def create_entity(conn: Connection, cursor: Cursor, entity: models.Model):
+def create_entity(conn: Connection, cursor: Cursor, entity: models.Model) -> None:
+    # TODO documentation
     query_placeholders = ', '.join('?' for _ in range(len(entity.to_dict())))
     query = f'INSERT INTO {entity.table_name} VALUES ({query_placeholders})'
     cursor.execute(query, (*entity,))
