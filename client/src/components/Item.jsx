@@ -83,20 +83,6 @@ const Item = () => {
                         </div>
                     </div>
                 </div>
-                {/*
-                <div>
-                    <h1>Box Id: {itemData.box_id}</h1>
-                    <h1>Created By: {itemData.created_by}</h1>
-                    <h1>Created Epoch Millis: {itemData.created_epoch_millis}</h1>
-                    <h1>Description: {itemData.description}</h1>
-                    <h1>DigiKey Part Number: {itemData.digikey_part_number}</h1>
-                    <h1>Item Id: {itemData.item_id}</h1>
-                    <h1>JLCPCB: {itemData.jlcpcb_part_number}</h1>
-                    <h1>Manufacturer Part Number: {itemData.mfg_part_number}</h1>
-                    <h1>Mouser Part Number: {itemData.mouser_part_number}</h1>
-                    <h1>Quantity: {itemData.quantity}</h1>
-                </div>
-            */}
             </div>
         );
     }
