@@ -53,7 +53,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#api_item_routes.api_item_get_dynamic"><code class="docutils literal notranslate"><span class="pre">api_item_get_dynamic()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#api_item_routes.api_item_create"><code class="docutils literal notranslate"><span class="pre">api_item_create()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#api_item_routes.api_item_update"><code class="docutils literal notranslate"><span class="pre">api_item_update()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#api_item_routes.api_item_remove"><code class="docutils literal notranslate"><span class="pre">api_item_remove()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api_item_routes.api_item_delete"><code class="docutils literal notranslate"><span class="pre">api_item_delete()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#api_item_routes.api_items_list"><code class="docutils literal notranslate"><span class="pre">api_items_list()</span></code></a></li>
 </ul>
 </li>
@@ -89,7 +89,7 @@
              
   <section id="module-api_item_routes">
 <span id="item-api"></span><h1>Item API<a class="headerlink" href="#module-api_item_routes" title="Permalink to this heading"></a></h1>
-<p>The Item API can create, get, update, remove, and list inventory item(s).</p>
+<p>The Item API can create, get, update, delete, and list inventory item(s).</p>
 <p>All routes except item retrieval require authentication, which is handled by <a class="reference internal" href="auth.html#module-auth" title="auth"><code class="xref py py-mod docutils literal notranslate"><span class="pre">auth</span></code></a>.
 Idempotent routes use the <code class="docutils literal notranslate"><span class="pre">GET</span></code> method while non-idempotent routes use <code class="docutils literal notranslate"><span class="pre">POST</span></code>.</p>
 <dl class="simple">
@@ -191,7 +191,7 @@ POST /api/item/get [&lt;item_id&gt;]
 </ul>
 </div></blockquote>
 <p>At least one attribute must be updated, though updating more than one is supported.
-Item IDs and creation user/time cannot be updated. Items must be removed and re-created to change these attributes.</p>
+Item IDs and creation user/time cannot be updated. Items must be deleted and re-created to change these attributes.</p>
 <p>Requires authentication scope <a class="reference internal" href="auth.html#auth.Scope.ITEM_UPDATE" title="auth.Scope.ITEM_UPDATE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">auth.Scope.ITEM_UPDATE</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -210,16 +210,16 @@ Item IDs and creation user/time cannot be updated. Items must be removed and re-
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="api_item_routes.api_item_remove">
-<span class="sig-prename descclassname"><span class="pre">api_item_routes.</span></span><span class="sig-name descname"><span class="pre">api_item_remove</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api_item_routes.api_item_remove" title="Permalink to this definition"></a></dt>
-<dd><p>Remove a single inventory item, identified by item ID.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">item</span><span class="o">/</span><span class="n">remove</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">item_id</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">api_key</span><span class="o">&gt;</span><span class="p">]</span>
+<dt class="sig sig-object py" id="api_item_routes.api_item_delete">
+<span class="sig-prename descclassname"><span class="pre">api_item_routes.</span></span><span class="sig-name descname"><span class="pre">api_item_delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api_item_routes.api_item_delete" title="Permalink to this definition"></a></dt>
+<dd><p>Delete a single inventory item, identified by item ID.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">item</span><span class="o">/</span><span class="n">delete</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">item_id</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">api_key</span><span class="o">&gt;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Requires authentication scope <a class="reference internal" href="auth.html#auth.Scope.ITEM_REMOVE" title="auth.Scope.ITEM_REMOVE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">auth.Scope.ITEM_REMOVE</span></code></a></p>
+<p>Requires authentication scope <a class="reference internal" href="auth.html#auth.Scope.ITEM_DELETE" title="auth.Scope.ITEM_DELETE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">auth.Scope.ITEM_DELETE</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><p><code class="docutils literal notranslate"><span class="pre">200</span></code> on success with the removed <a class="reference internal" href="models.html#models.Item" title="models.Item"><code class="xref py py-class docutils literal notranslate"><span class="pre">models.Item</span></code></a>,</p>
+<dd class="field-odd"><p><p><code class="docutils literal notranslate"><span class="pre">200</span></code> on success with the deleted <a class="reference internal" href="models.html#models.Item" title="models.Item"><code class="xref py py-class docutils literal notranslate"><span class="pre">models.Item</span></code></a>,</p>
 <p><code class="docutils literal notranslate"><span class="pre">400</span></code> if item ID was malformed,</p>
 <p><code class="docutils literal notranslate"><span class="pre">400</span></code> if API key was malformed,</p>
 <p><code class="docutils literal notranslate"><span class="pre">401</span></code> if API key was invalid,</p>
