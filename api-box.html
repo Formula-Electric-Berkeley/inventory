@@ -52,7 +52,8 @@
 <li class="toctree-l1"><a class="reference internal" href="api-user.html">User API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api-reservation.html">Reservation API</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Box API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#api_box_routes.api_box_get"><code class="docutils literal notranslate"><span class="pre">api_box_get()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api_box_routes.api_box_get_static"><code class="docutils literal notranslate"><span class="pre">api_box_get_static()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api_box_routes.api_box_get_dynamic"><code class="docutils literal notranslate"><span class="pre">api_box_get_dynamic()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#api_box_routes.api_box_create"><code class="docutils literal notranslate"><span class="pre">api_box_create()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#api_box_routes.api_box_update"><code class="docutils literal notranslate"><span class="pre">api_box_update()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#api_box_routes.api_box_delete"><code class="docutils literal notranslate"><span class="pre">api_box_delete()</span></code></a></li>
@@ -101,10 +102,28 @@ Idempotent routes use the <code class="docutils literal notranslate"><span class
 </dd>
 </dl>
 <dl class="py function">
-<dt class="sig sig-object py" id="api_box_routes.api_box_get">
-<span class="sig-prename descclassname"><span class="pre">api_box_routes.</span></span><span class="sig-name descname"><span class="pre">api_box_get</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api_box_routes.api_box_get" title="Permalink to this definition"></a></dt>
-<dd><p>Get a single inventory box by box ID.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">box</span><span class="o">/</span><span class="n">get</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">box_id</span><span class="o">&gt;</span><span class="p">]</span>
+<dt class="sig sig-object py" id="api_box_routes.api_box_get_static">
+<span class="sig-prename descclassname"><span class="pre">api_box_routes.</span></span><span class="sig-name descname"><span class="pre">api_box_get_static</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">box_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api_box_routes.api_box_get_static" title="Permalink to this definition"></a></dt>
+<dd><p>Get a single inventory box by box ID. Route forms a permalink (static) URL.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GET</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">box</span><span class="o">/</span><span class="n">get</span><span class="o">/&lt;</span><span class="n">box_id</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><code class="docutils literal notranslate"><span class="pre">200</span></code> on success with <a class="reference internal" href="models.html#models.Box" title="models.Box"><code class="xref py py-class docutils literal notranslate"><span class="pre">models.Box</span></code></a>,</p>
+<p><code class="docutils literal notranslate"><span class="pre">400</span></code> if box ID was malformed,</p>
+<p><code class="docutils literal notranslate"><span class="pre">404</span></code> if box was not found</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api_box_routes.api_box_get_dynamic">
+<span class="sig-prename descclassname"><span class="pre">api_box_routes.</span></span><span class="sig-name descname"><span class="pre">api_box_get_dynamic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api_box_routes.api_box_get_dynamic" title="Permalink to this definition"></a></dt>
+<dd><p>Get a single inventory box by box ID. Route URL is mutable by box ID (dynamic).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>GET /api/box/get?box_id=&lt;box_id&gt;
+POST /api/box/get [&lt;box_id&gt;]
 </pre></div>
 </div>
 <dl class="field-list simple">
