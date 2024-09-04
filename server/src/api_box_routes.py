@@ -52,7 +52,7 @@ def api_box_get_dynamic():
     # If GET use query parameters, else if POST use form data
     request_parameters = flask.request.form if flask.request.method == 'POST' else flask.request.args
     if models.Box.id_name not in request_parameters:
-        flask.abort(400, 'Box ID was not found')
+        flask.abort(400, f'{models.Box.id_name} was not found in request')
     return db.get(id_=request_parameters.get(models.Box.id_name), entity_type=models.Box)
 
 
@@ -125,8 +125,6 @@ def api_box_update():
         entity_type=models.Box,
         immutable_props=[
             models.Box.id_name,
-            models.User.id_name,
-            models.Item.id_name,
         ],
     )
 

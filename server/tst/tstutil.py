@@ -2,6 +2,7 @@ import json
 import secrets
 import sqlite3
 import unittest
+from abc import ABC
 from typing import Any
 from typing import Dict
 from typing import Optional
@@ -61,7 +62,7 @@ class TestBase(unittest.TestCase):
         raise NotImplementedError()
 
 
-class AuthorizedTests:
+class AuthorizedTests(ABC):
     def test_400_no_apikey(self):
         attrs = {}
         self.call_route_assert_code(400, attrs, 'API key was not present')
@@ -90,10 +91,10 @@ class AuthorizedTests:
 
     @classmethod
     def scope(cls) -> auth.Scope:
-        raise NotImplementedError()
+        raise NotImplementedError('Required authorization scope for these tests are implemented by test case(s)')
 
 
-class IdTests:
+class IdTests(ABC):
     def test_400_malformed_id(self):
         attrs = {
             self.entity_type.id_name: '*',
@@ -117,7 +118,7 @@ class IdTests:
 
     @classmethod
     def entity_type(cls) -> Type[models.Model]:
-        raise NotImplementedError()
+        raise NotImplementedError('Entity type for these tests are implemented by test case(s)')
 
 
 def drop_all_tables() -> None:
@@ -142,3 +143,7 @@ def create_user(scope: Optional[auth.Scope] = None) -> models.User:
     conn, cursor = common.get_db_connection()
     db.create_entity(conn, cursor, user)
     return user
+
+
+def attrs_to_params(attrs: Dict[str, str]) -> str:
+    return '&'.join([f'{key}={value}' for key, value in attrs.items()])

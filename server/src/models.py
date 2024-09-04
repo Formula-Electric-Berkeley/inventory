@@ -36,9 +36,15 @@ class Model(ABC):
     def __str__(self) -> str:
         return self.to_insert_str()
 
+    def __repr__(self):
+        return self.to_insert_str()
+
     def __iter__(self):
         for v in self.to_dict().values():
             yield v
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.to_dict() == other.to_dict()
 
     @classmethod
     @abstractmethod
@@ -195,9 +201,7 @@ class EntityCache:
         return entities[start_idx:end_idx]
 
 
-def get_model_attributes(entity_type: Type[Model]) -> Dict[str, Any]:
-    """Get the names of a :py:class:`Model` 's attributes using inspection."""
+def get_model_attributes(entity_type: Type[Model]) -> Dict[str, Type]:
+    """Get a mapping of names to types of a :py:class:`Model` 's attributes using inspection."""
     raw_params = inspect.signature(entity_type.__init__).parameters
-    dict_params = dict(raw_params)
-    dict_params.pop('self')
-    return dict_params
+    return {k: v.annotation for k, v in raw_params.items() if k != 'self'}

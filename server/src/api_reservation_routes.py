@@ -21,7 +21,7 @@ def api_reservation_get_dynamic():
     # If GET use query parameters, else if POST use form data
     request_parameters = flask.request.form if flask.request.method == 'POST' else flask.request.args
     if models.Reservation.id_name not in request_parameters:
-        flask.abort(400, 'Reservation ID was not found')
+        flask.abort(400, f'{models.Reservation.id_name} was not found in request')
     return db.get(id_=request_parameters.get(models.Reservation.id_name), entity_type=models.Reservation)
 
 
