@@ -9,10 +9,20 @@ from identifier import Identifier
 api_reservation_blueprint = flask.Blueprint('api_reservation', __name__)
 
 
-@api_reservation_blueprint.route('/api/reservation/get', methods=['POST'])
-def api_reservation_get():
-    form = common.FlaskPOSTForm(flask.request.form)
-    return db.get(id_=form.get(models.Reservation.id_name), entity_type=models.Reservation)
+@api_reservation_blueprint.route('/api/reservation/get/<reservation_id>', methods=['GET'])
+def api_reservation_get_static(reservation_id):
+    # TODO documentation
+    return db.get(id_=reservation_id, entity_type=models.Reservation)
+
+
+@api_reservation_blueprint.route('/api/reservation/get', methods=['GET', 'POST'])
+def api_reservation_get_dynamic():
+    # TODO documentation
+    # If GET use query parameters, else if POST use form data
+    request_parameters = flask.request.form if flask.request.method == 'POST' else flask.request.args
+    if models.Reservation.id_name not in request_parameters:
+        flask.abort(400, 'Reservation ID was not found')
+    return db.get(id_=request_parameters.get(models.Reservation.id_name), entity_type=models.Reservation)
 
 
 @api_reservation_blueprint.route('/api/reservation/create', methods=['POST'])

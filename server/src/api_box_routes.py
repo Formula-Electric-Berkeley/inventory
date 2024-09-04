@@ -21,11 +21,26 @@ from identifier import Identifier
 api_box_blueprint = flask.Blueprint('api_box', __name__)
 
 
-@api_box_blueprint.route('/api/box/get', methods=['POST'])
-def api_box_get():
+@api_box_blueprint.route('/api/box/get/<box_id>', methods=['GET'])
+def api_box_get_static(box_id):
     """
-    Get a single inventory box by box ID. ::
+    Get a single inventory box by box ID. Route forms a permalink (static) URL. ::
 
+        GET /api/box/get/<box_id>
+
+    :return: ``200`` on success with :py:class:`models.Box`,\n
+             ``400`` if box ID was malformed,\n
+             ``404`` if box was not found
+    """
+    return db.get(id_=box_id, entity_type=models.Box)
+
+
+@api_box_blueprint.route('/api/box/get', methods=['GET', 'POST'])
+def api_box_get_dynamic():
+    """
+    Get a single inventory box by box ID. Route URL is mutable by box ID (dynamic). ::
+
+        GET /api/box/get?box_id=<box_id>
         POST /api/box/get [<box_id>]
 
     :return: ``200`` on success with the desired :py:class:`models.Box`,\n
@@ -34,8 +49,11 @@ def api_box_get():
              ``404`` if box was not found, \n
              ``500`` if box ID was not the expected length
     """
-    form = common.FlaskPOSTForm(flask.request.form)
-    return db.get(id_=form.get(models.Box.id_name), entity_type=models.Box)
+    # If GET use query parameters, else if POST use form data
+    request_parameters = flask.request.form if flask.request.method == 'POST' else flask.request.args
+    if models.Box.id_name not in request_parameters:
+        flask.abort(400, 'Box ID was not found')
+    return db.get(id_=request_parameters.get(models.Box.id_name), entity_type=models.Box)
 
 
 @api_box_blueprint.route('/api/box/create', methods=['POST'])
