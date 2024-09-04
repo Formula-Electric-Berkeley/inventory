@@ -2,8 +2,12 @@ name: unittest
 
 on:
   pull_request:
+    paths:
+      - server/**
   push:
     branches: [main]
+    paths:
+      - server/**
 
 jobs:
   unittest:

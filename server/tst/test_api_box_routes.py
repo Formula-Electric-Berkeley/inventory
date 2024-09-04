@@ -53,7 +53,6 @@ class TestBoxCreate(tstutil.TestBase, tstutil.AuthorizedTests):
         return self.client.post('/api/box/create', data=attrs)
 
 
-# TODO GET routes
 class TestBoxGet(tstutil.TestBase, tstutil.IdTests):
     entity_type = models.Box
 
