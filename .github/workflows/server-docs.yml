@@ -2,8 +2,12 @@ name: server-docs
 
 on:
   pull_request:
+    paths:
+      - server/**
   push:
     branches: [main]
+    paths:
+      - server/**
 
 permissions:
   contents: write
