@@ -109,7 +109,7 @@ def create_response(code: int, body: Union[List[dict], dict]) -> Dict[str, Any]:
         {
             'code': <number>,
             'body': [
-                <one or more of models.Model>
+                <zero or more of models.Model>
                 ...
             ]
         }

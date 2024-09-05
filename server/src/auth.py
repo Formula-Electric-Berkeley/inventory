@@ -46,6 +46,9 @@ class Scope(enum.IntFlag):
     BOX_UPDATE = enum.auto()
     BOX_DELETE = enum.auto()
     BOXES_LIST = enum.auto()
+    THUMBNAIL_GET = enum.auto()
+    THUMBNAIL_UPLOAD = enum.auto()
+    THUMBNAIL_DELETE = enum.auto()
 
 
 def route_requires_auth(scope):

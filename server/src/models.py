@@ -26,7 +26,7 @@ class Model(ABC):
 
     def to_response(self) -> Dict[str, Any]:
         """Convert this model to a JSON API response."""
-        return common.create_response(200, self.to_dict())
+        return common.create_response(200, [self.to_dict()])
 
     def to_insert_str(self) -> str:
         """Convert this model to a string which can be INSERTed into an SQL database."""

@@ -136,4 +136,7 @@ venv/
 .env
 .DS_Store
 **/.DS_Store
+server/**/*.db-journal
 server/docs/build
+server/thumbnails/*
+!server/thumbnails/.gitkeep

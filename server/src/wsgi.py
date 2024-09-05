@@ -7,6 +7,7 @@ import models
 from api_box_routes import api_box_blueprint
 from api_item_routes import api_item_blueprint
 from api_reservation_routes import api_reservation_blueprint
+from api_thumbnail_routes import api_thumbnail_blueprint
 from api_user_routes import api_user_blueprint
 from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
@@ -39,6 +40,7 @@ app.register_blueprint(api_item_blueprint)
 app.register_blueprint(api_user_blueprint)
 app.register_blueprint(api_reservation_blueprint)
 app.register_blueprint(api_box_blueprint)
+app.register_blueprint(api_thumbnail_blueprint)
 
 
 @app.teardown_appcontext
