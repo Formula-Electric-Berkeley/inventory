@@ -32,10 +32,10 @@ def api_box_get_static(box_id):
              ``400`` if box ID was malformed,\n
              ``404`` if box was not found
     """
-    return db.get(id_=box_id, entity_type=models.Box)
+    return db.get(entity_type=models.Box, id_=box_id)
 
 
-@api_box_blueprint.route('/api/box/get', methods=['GET', 'POST'])
+@api_box_blueprint.route('/api/box/get', methods=['GET'])
 def api_box_get_dynamic():
     """
     Get a single inventory box by box ID. Route URL is mutable by box ID (dynamic). ::
@@ -49,11 +49,7 @@ def api_box_get_dynamic():
              ``404`` if box was not found, \n
              ``500`` if box ID was not the expected length
     """
-    # If GET use query parameters, else if POST use form data
-    request_parameters = flask.request.form if flask.request.method == 'POST' else flask.request.args
-    if models.Box.id_name not in request_parameters:
-        flask.abort(400, f'{models.Box.id_name} was not found in request')
-    return db.get(id_=request_parameters.get(models.Box.id_name), entity_type=models.Box)
+    return db.get(entity_type=models.Box)
 
 
 @api_box_blueprint.route('/api/box/create', methods=['POST'])
@@ -151,7 +147,7 @@ def api_box_delete():
     return db.delete(entity_type=models.Box)
 
 
-@api_box_blueprint.route('/api/boxes/list', methods=['GET', 'POST'])
+@api_box_blueprint.route('/api/boxes/list', methods=['GET'])
 def api_boxes_list():
     """
     List one or more inventory boxes with optional ordering. ::

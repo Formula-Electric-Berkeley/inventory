@@ -12,17 +12,13 @@ api_reservation_blueprint = flask.Blueprint('api_reservation', __name__)
 @api_reservation_blueprint.route('/api/reservation/get/<reservation_id>', methods=['GET'])
 def api_reservation_get_static(reservation_id):
     # TODO documentation
-    return db.get(id_=reservation_id, entity_type=models.Reservation)
+    return db.get(entity_type=models.Reservation, id_=reservation_id)
 
 
-@api_reservation_blueprint.route('/api/reservation/get', methods=['GET', 'POST'])
+@api_reservation_blueprint.route('/api/reservation/get', methods=['GET'])
 def api_reservation_get_dynamic():
     # TODO documentation
-    # If GET use query parameters, else if POST use form data
-    request_parameters = flask.request.form if flask.request.method == 'POST' else flask.request.args
-    if models.Reservation.id_name not in request_parameters:
-        flask.abort(400, f'{models.Reservation.id_name} was not found in request')
-    return db.get(id_=request_parameters.get(models.Reservation.id_name), entity_type=models.Reservation)
+    return db.get(entity_type=models.Reservation)
 
 
 @api_reservation_blueprint.route('/api/reservation/create', methods=['POST'])
@@ -75,7 +71,7 @@ def api_reservation_delete():
     return db.delete(entity_type=models.Reservation)
 
 
-@api_reservation_blueprint.route('/api/reservations/list', methods=['GET', 'POST'])
+@api_reservation_blueprint.route('/api/reservations/list', methods=['GET'])
 def api_reservations_list():
     # TODO documentation
     return db.list_(entity_type=models.Reservation)

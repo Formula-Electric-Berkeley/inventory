@@ -15,7 +15,7 @@ api_user_blueprint = flask.Blueprint('api_user', __name__)
 def api_user_get():
     # TODO documentation
     form = common.FlaskPOSTForm(flask.request.form)
-    return db.get(id_=form.get(models.User.id_name), entity_type=models.User)
+    return db.get(entity_type=models.User, id_=form.get(models.User.id_name))
 
 
 @api_user_blueprint.route('/api/user/create', methods=['POST'])
