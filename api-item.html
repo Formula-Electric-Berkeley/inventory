@@ -121,7 +121,6 @@ Idempotent routes use the <code class="docutils literal notranslate"><span class
 <span class="sig-prename descclassname"><span class="pre">api_item_routes.</span></span><span class="sig-name descname"><span class="pre">api_item_get_dynamic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api_item_routes.api_item_get_dynamic" title="Permalink to this definition"></a></dt>
 <dd><p>Get a single inventory item by item ID. Route URL is mutable by item ID (dynamic).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>GET /api/item/get?item_id=&lt;item_id&gt;
-POST /api/item/get [&lt;item_id&gt;]
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -237,7 +236,6 @@ Item IDs and creation user/time cannot be updated. Items must be deleted and re-
 <span class="sig-prename descclassname"><span class="pre">api_item_routes.</span></span><span class="sig-name descname"><span class="pre">api_items_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api_item_routes.api_items_list" title="Permalink to this definition"></a></dt>
 <dd><p>List one or more inventory items with optional ordering.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>GET /api/items/list?sortby={*&lt;item_attributes&gt;}&amp;direction={ASC,DESC}&amp;limit=&lt;limit&gt;&amp;offset=&lt;offset&gt;
-POST /api/items/list [sortby={*&lt;item_attributes&gt;}, &lt;direction={ASC,DESC}&gt;, &lt;limit&gt;, &lt;offset&gt;]
 </pre></div>
 </div>
 <p>Available (all optional) parameters:</p>
