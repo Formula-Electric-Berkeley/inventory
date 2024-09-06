@@ -1,28 +1,41 @@
 import glob
 import os
 from sqlite3.dbapi2 import Cursor
+from typing import Optional
 
 import auth
 import common
 import flask
 import models
 import werkzeug.utils
+from flask import Response
 from PIL import Image
 
 
 THUMBNAIL_FOLDER = os.path.abspath('../thumbnails')
-ALLOWED_EXTENSIONS = {'jpg'}
-# ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10MB
 
 api_thumbnail_blueprint = flask.Blueprint('api_thumbnail', __name__)
 
 
-@api_thumbnail_blueprint.route('/api/thumbnail/get', methods=['GET', 'POST'])
-def api_thumbnail_get():
+@api_thumbnail_blueprint.route('/api/thumbnail/get/<item_id>', methods=['GET'])
+def api_thumbnail_get_static(item_id):
     # TODO documentation
-    form = common.FlaskPOSTForm(flask.request.form if flask.request.method == 'POST' else flask.request.args)
+    return _get_thumbnail(item_id)
+
+
+@api_thumbnail_blueprint.route('/api/thumbnail/get', methods=['GET'])
+def api_thumbnail_get_dynamic():
+    # TODO documentation
+    form = common.FlaskPOSTForm(flask.request.args)
     item_id = form.get(models.Item.id_name)
+    return _get_thumbnail(item_id, form)
+
+
+def _get_thumbnail(item_id: str, form: Optional[common.FlaskPOSTForm] = None) -> Response:
+    if form is None:
+        form = common.FlaskPOSTForm(flask.request.args)
     thumbnail_size = form.get('size', int)
     thumbnail_name = f'{item_id}_{thumbnail_size}.jpg'
     thumbnail_path = os.path.join(THUMBNAIL_FOLDER, thumbnail_name)
@@ -32,7 +45,6 @@ def api_thumbnail_get():
         image = Image.open(thumbnail_source_path)
         image.thumbnail((thumbnail_size, thumbnail_size))
         image.save(thumbnail_path)
-        return image
 
     return flask.send_file(thumbnail_path, mimetype='image/jpg')
 
@@ -66,8 +78,15 @@ def api_thumbnail_upload():
         flask.abort(400, f'A thumbnail already exists for {models.Item.id_name} {item_id}. Delete this first.')
 
     _verify_item_exists(cursor, item_id)
+    try:
+        Image.open(image.stream).verify()
+    except Exception:
+        flask.abort(400, 'Image data was malformed')
 
-    image.save(output_filepath)
+    pil_image = Image.open(image.stream)
+    rgb_pil_image = pil_image.convert('RGB')
+    rgb_pil_image.save(output_filepath)
+
     return common.create_response(200, [])
 
 
