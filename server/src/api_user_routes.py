@@ -5,9 +5,29 @@ import common
 import db
 import flask
 import models
+from flask import jsonify
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import auth as fauth
 from identifier import Identifier
 
 api_user_blueprint = flask.Blueprint('api_user', __name__)
+
+cred = credentials.Certificate(
+    "../inventory-a7bb6-firebase-adminsdk-ikk5m-492b597eea.json")
+firebase_admin.initialize_app(cred)
+
+
+@api_user_blueprint.route('/api/user/google_auth', methods=['POST'])
+def google_auth_user():
+    token = flask.request.json.get('token')
+    try:
+        decoded_token = fauth.verify_id_token(token)
+        user_id = decoded_token['uid']
+        # check id against db
+        return jsonify({"id": user_id})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 401
 
 
 @api_user_blueprint.route('/api/user/get', methods=['POST'])
@@ -25,7 +45,8 @@ def api_user_create():
     form = common.FlaskPOSTForm(flask.request.form)
     conn, cursor = common.get_db_connection()
 
-    existing_user_res = cursor.execute(f'SELECT * FROM {models.User.table_name} WHERE name=?', (form.get('name'),))
+    existing_user_res = cursor.execute(
+        f'SELECT * FROM {models.User.table_name} WHERE name=?', (form.get('name'),))
     existing_users = existing_user_res.fetchall()
     if len(existing_users) != 0:
         flask.abort(400, 'A user already exists with that name')
