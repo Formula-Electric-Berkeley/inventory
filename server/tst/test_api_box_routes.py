@@ -78,7 +78,9 @@ class TestBoxGet(tstutil.TestBase, tstutil.IdTests):
         )
 
     def call_route(self, attrs: Dict[str, str]):
-        return self.client.post('/api/box/get', data=attrs)
+        params = tstutil.attrs_to_params(attrs)
+        url = f'/api/box/get?{params}'
+        return self.client.get(url)
 
 
 class TestBoxGetDynamicGET(TestBoxGet):
@@ -163,7 +165,7 @@ class TestBoxDelete(tstutil.TestBase, tstutil.AuthorizedTests, tstutil.IdTests):
 
     def test_200(self):
         self.test_200_without_verification()
-        verify_response = self.client.post('/api/box/get', data=self.attrs)
+        verify_response = self.client.get(f'/api/box/get/{self.box.box_id}')
         self.assertEqual(verify_response.status_code, 404, 'Retrieved deleted item unexpectedly')
 
     def test_200_without_verification(self):
@@ -295,11 +297,6 @@ class TestBoxesList(tstutil.TestBase):
         }
         self.call_route_assert_code(400, attrs, 'eggplants is not a valid sort key')
 
-    def call_route(self, attrs: Dict[str, str]):
-        return self.client.post('/api/boxes/list', data=attrs)
-
-
-class TestBoxesListGET(TestBoxesList):
     def call_route(self, attrs: Dict[str, str]):
         params = tstutil.attrs_to_params(attrs)
         url = f'/api/boxes/list?{params}'

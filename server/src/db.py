@@ -2,6 +2,7 @@
 from sqlite3.dbapi2 import Connection
 from sqlite3.dbapi2 import Cursor
 from typing import List
+from typing import Optional
 from typing import Type
 
 import auth
@@ -11,10 +12,15 @@ import models
 from common import Response
 
 
-def get(id_: str, entity_type: Type[models.Model]) -> Response:
+def get(entity_type: Type[models.Model], id_: Optional[str] = None) -> Response:
     # TODO documentation
+    if id_ is None:
+        if entity_type.id_name not in flask.request.args:
+            flask.abort(400, f'{entity_type.id_name} was not found in request')
+        id_ = flask.request.args.get(entity_type.id_name)
     if common.is_dirty(id_):
         flask.abort(400, f'{entity_type.id_name} was malformed')
+
     conn, cursor = common.get_db_connection()
     res = cursor.execute(f'SELECT * FROM {entity_type.table_name} WHERE {entity_type.id_name}=?', (id_,))
     db_entity = res.fetchone()
@@ -87,21 +93,18 @@ def list_(entity_type: Type[models.Model]) -> Response:
     # TODO documentation
     conn, cursor = common.get_db_connection()
 
-    # If GET use query parameters, else if POST use form data
-    request_parameters = flask.request.form if flask.request.method == 'POST' else flask.request.args
-
-    limit = get_int_parameter('limit', common.RET_ENTITIES_DEF_LIMIT, request_parameters)
+    limit = get_int_parameter('limit', common.RET_ENTITIES_DEF_LIMIT, flask.request.args)
     limit = min(limit, common.RET_ENTITIES_MAX_LIMIT)
 
-    offset = get_int_parameter('offset', 0, request_parameters)
+    offset = get_int_parameter('offset', 0, flask.request.args)
 
-    direction = request_parameters.get('direction', default='ASC').upper()
+    direction = flask.request.args.get('direction', default='ASC').upper()
     if common.is_dirty(direction) or (direction not in ('DESC', 'ASC')):
         flask.abort(400, 'direction is malformed, should be DESC or ASC')
 
     sortby = None
-    if 'sortby' in request_parameters:
-        sortby = request_parameters.get('sortby')
+    if 'sortby' in flask.request.args:
+        sortby = flask.request.args.get('sortby')
         if common.is_dirty(sortby):
             flask.abort(400, 'sortby is malformed')
         if sortby not in models.get_model_attributes(entity_type).keys():

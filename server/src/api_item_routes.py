@@ -29,16 +29,15 @@ def api_item_get_static(item_id):
              ``400`` if item ID was malformed,\n
              ``404`` if item was not found
     """
-    return db.get(id_=item_id, entity_type=models.Item)
+    return db.get(entity_type=models.Item, id_=item_id)
 
 
-@api_item_blueprint.route('/api/item/get', methods=['GET', 'POST'])
+@api_item_blueprint.route('/api/item/get', methods=['GET'])
 def api_item_get_dynamic():
     """
     Get a single inventory item by item ID. Route URL is mutable by item ID (dynamic). ::
 
         GET /api/item/get?item_id=<item_id>
-        POST /api/item/get [<item_id>]
 
     :return: ``200`` on success with the desired :py:class:`models.Item`,\n
              ``400`` if item ID was not found,\n
@@ -46,11 +45,7 @@ def api_item_get_dynamic():
              ``404`` if item was not found, \n
              ``500`` if item ID was not the expected length
     """
-    # If GET use query parameters, else if POST use form data
-    request_parameters = flask.request.form if flask.request.method == 'POST' else flask.request.args
-    if models.Item.id_name not in request_parameters:
-        flask.abort(400, f'{models.Item.id_name} was not found in request')
-    return db.get(id_=request_parameters.get(models.Item.id_name), entity_type=models.Item)
+    return db.get(entity_type=models.Item)
 
 
 @api_item_blueprint.route('/api/item/create', methods=['POST'])
@@ -171,13 +166,12 @@ def api_item_delete():
     return db.delete(entity_type=models.Item)
 
 
-@api_item_blueprint.route('/api/items/list', methods=['GET', 'POST'])
+@api_item_blueprint.route('/api/items/list', methods=['GET'])
 def api_items_list():
     """
     List one or more inventory items with optional ordering. ::
 
         GET /api/items/list?sortby={*<item_attributes>}&direction={ASC,DESC}&limit=<limit>&offset=<offset>
-        POST /api/items/list [sortby={*<item_attributes>}, <direction={ASC,DESC}>, <limit>, <offset>]
 
     Available (all optional) parameters:
 
