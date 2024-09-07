@@ -1,3 +1,5 @@
+import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { signInWithPopup } from '../firebase';
 
@@ -39,13 +41,29 @@ const SignIn = () => {
         }
     };
 
+    const handleSignOut = () => {
+        localStorage.clear("token")
+        localStorage.clear("name")
+        window.location.href = `/`;
+    }
+
     return (
         <div>
             {localStorage.getItem("token") ?
-                localStorage.getItem("name") :
-                <button onClick={handleGoogleSignIn}>
-                    Sign in with Google
-                </button>
+                <div className='inline text-xl'>
+                    {localStorage.getItem("name")}
+                    <span onClick={handleSignOut}>
+                        <FontAwesomeIcon className='ml-3 hover:text-red-500 cursor-pointer transition'
+                            icon={faArrowRightFromBracket} />
+                    </span>
+                </div>
+                :
+                <div>
+                    <button className='border border-black px-3 py-1 rounded-full hover:shadow-lg transition'
+                        onClick={handleGoogleSignIn}>
+                        Sign in with Google
+                    </button>
+                </div>
             }
         </div>
     );
