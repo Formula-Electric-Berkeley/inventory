@@ -30,7 +30,8 @@ const SignIn = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log("Authentication successful:", data);
+                localStorage.setItem("token", data.token)
+                localStorage.setItem("name", data.name)
             } else {
                 console.error("Authentication failed:", await response.json());
             }
