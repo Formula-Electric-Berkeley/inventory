@@ -50,7 +50,7 @@ const SignIn = () => {
     return (
         <div>
             {localStorage.getItem("token") ?
-                <div className='inline text-xl'>
+                <div className='inline text-lg'>
                     {localStorage.getItem("name")}
                     <span onClick={handleSignOut}>
                         <FontAwesomeIcon className='ml-3 hover:text-red-500 cursor-pointer transition'
