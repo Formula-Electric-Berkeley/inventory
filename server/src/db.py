@@ -22,7 +22,8 @@ def get(entity_type: Type[models.Model], id_: Optional[str] = None) -> Response:
         flask.abort(400, f'{entity_type.id_name} was malformed')
 
     conn, cursor = common.get_db_connection()
-    res = cursor.execute(f'SELECT * FROM {entity_type.table_name} WHERE {entity_type.id_name}=?', (id_,))
+    res = cursor.execute(
+        f'SELECT * FROM {entity_type.table_name} WHERE {entity_type.id_name}=?', (id_,))
     db_entity = res.fetchone()
     if db_entity is None or len(db_entity) == 0:
         flask.abort(404, f'{entity_type.__name__} does not exist')
@@ -37,7 +38,8 @@ def update(entity_type: Type[models.Model], immutable_props: List[str]) -> Respo
 
     # Check that entity exists in DB before modifying
     id_ = form.get(entity_type.id_name)
-    res = cursor.execute(f'SELECT 1 FROM {entity_type.table_name} WHERE {entity_type.id_name}=? LIMIT 1', (id_,))
+    res = cursor.execute(
+        f'SELECT 1 FROM {entity_type.table_name} WHERE {entity_type.id_name}=? LIMIT 1', (id_,))
     db_entity = res.fetchone()
     if db_entity is None or len(db_entity) == 0 or db_entity == 0:
         flask.abort(404, f'{entity_type.__name__} does not exist')
@@ -45,22 +47,27 @@ def update(entity_type: Type[models.Model], immutable_props: List[str]) -> Respo
     entity_properties = models.get_model_attributes(entity_type)
     for immutable_prop in immutable_props:
         if immutable_prop in form.form and immutable_prop != entity_type.id_name:
-            flask.abort(400, f'Immutable property {immutable_prop} found in request body')
+            flask.abort(
+                400, f'Immutable property {immutable_prop} found in request body')
         entity_properties.pop(immutable_prop)
 
-    properties_to_update = {k: v for k, v in entity_properties.items() if k in form.form}
+    properties_to_update = {k: v for k,
+                            v in entity_properties.items() if k in form.form}
     if len(properties_to_update) <= 0:
         flask.abort(400, 'No attributes to be updated were provided')
 
     for key, value in properties_to_update.items():
         query_params = (form.get(key, value), id_)
-        cursor.execute(f'UPDATE {entity_type.table_name} SET {key}=? WHERE {entity_type.id_name}=?', query_params)
+        cursor.execute(
+            f'UPDATE {entity_type.table_name} SET {key}=? WHERE {entity_type.id_name}=?', query_params)
     conn.commit()
 
-    updated_res = cursor.execute(f'SELECT * FROM {entity_type.table_name} WHERE {entity_type.id_name}=?', (id_,))
+    updated_res = cursor.execute(
+        f'SELECT * FROM {entity_type.table_name} WHERE {entity_type.id_name}=?', (id_,))
     db_updated_entity = updated_res.fetchone()
     if db_updated_entity is None or len(db_updated_entity) == 0:
-        flask.abort(404, f'{entity_type.__class__.__name__} did not exist after updating')
+        flask.abort(
+            404, f'{entity_type.__class__.__name__} did not exist after updating')
     updated_entity = entity_type(*db_updated_entity)
     return updated_entity.to_response()
 
@@ -71,15 +78,18 @@ def delete(entity_type: Type[models.Model]) -> Response:
     conn, cursor = common.get_db_connection()
 
     id_ = form.get(entity_type.id_name)
-    entity_res = cursor.execute(f'SELECT * FROM {entity_type.table_name} WHERE {entity_type.id_name}=?', (id_,))
+    entity_res = cursor.execute(
+        f'SELECT * FROM {entity_type.table_name} WHERE {entity_type.id_name}=?', (id_,))
     db_entities = entity_res.fetchall()
     if db_entities is None or len(db_entities) == 0 or db_entities == 0:
         flask.abort(404, f'{entity_type.__name__} does not exist')
     if len(db_entities) != 1:
-        flask.abort(500, f'Expected 1 item with matching {entity_type.__name__.lower()} ID, got {len(db_entities)}')
+        flask.abort(
+            500, f'Expected 1 item with matching {entity_type.__name__.lower()} ID, got {len(db_entities)}')
     db_entity = db_entities[0]
 
-    cursor.execute(f'DELETE FROM {entity_type.table_name} WHERE {entity_type.id_name}=?', (id_,))
+    cursor.execute(
+        f'DELETE FROM {entity_type.table_name} WHERE {entity_type.id_name}=?', (id_,))
     conn.commit()
 
     deleted_entity = entity_type(*db_entity)
@@ -93,7 +103,8 @@ def list_(entity_type: Type[models.Model]) -> Response:
     # TODO documentation
     conn, cursor = common.get_db_connection()
 
-    limit = get_int_parameter('limit', common.RET_ENTITIES_DEF_LIMIT, flask.request.args)
+    limit = get_int_parameter(
+        'limit', common.RET_ENTITIES_DEF_LIMIT, flask.request.args)
     limit = min(limit, common.RET_ENTITIES_MAX_LIMIT)
 
     offset = get_int_parameter('offset', 0, flask.request.args)
@@ -152,6 +163,14 @@ def get_request_user_id(cursor: Cursor, form: common.FlaskPOSTForm) -> str:
         flask.abort(404, 'User does not exist')
     user_id = db_user[0]
     return user_id
+
+
+def get_user_id_exists(user_id: str) -> bool:
+    conn, cursor = common.get_db_connection()
+    user_query = f"SELECT {models.User.id_name} FROM {models.User.table_name} WHERE user_id='{user_id}'"
+    user_res = cursor.execute(user_query)
+    db_user = user_res.fetchone()
+    return db_user is not None and len(db_user) != 0
 
 
 def create_entity(conn: Connection, cursor: Cursor, entity: models.Model) -> None:
