@@ -92,7 +92,7 @@ class Item(Model):
 class User(Model):
     """Represents a single user in the database."""
     id_name = 'user_id'
-    id_length = 32
+    id_length = 28
     table_name = 'users'
 
     def __init__(self, user_id: Identifier, api_key: str, name: str, authmask: int):
