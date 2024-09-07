@@ -32,6 +32,7 @@ const SignIn = () => {
                 const data = await response.json();
                 localStorage.setItem("token", data.token)
                 localStorage.setItem("name", data.name)
+                window.location.href = `/`;
             } else {
                 console.error("Authentication failed:", await response.json());
             }
@@ -40,7 +41,12 @@ const SignIn = () => {
 
     return (
         <div>
-            <button onClick={handleGoogleSignIn}>Sign in with Google</button>
+            {localStorage.getItem("token") ?
+                localStorage.getItem("name") :
+                <button onClick={handleGoogleSignIn}>
+                    Sign in with Google
+                </button>
+            }
         </div>
     );
 };
