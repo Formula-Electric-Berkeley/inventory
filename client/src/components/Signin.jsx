@@ -9,8 +9,8 @@ const SignIn = () => {
         try {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
-            const idToken = await user.getIdToken();  // Obtain the Firebase ID token
-            return idToken;
+            const idToken = await user.getIdToken();
+            return { name: user.displayName, token: idToken };
         } catch (error) {
             console.error("Error during sign-in:", error);
             return null;
@@ -18,20 +18,19 @@ const SignIn = () => {
     };
 
     const handleGoogleSignIn = async () => {
-        const idToken = await signInWithGoogle();
-        if (idToken) {
+        const userData = await signInWithGoogle();
+        if (userData) {
             const response = await fetch(`${window.env.REACT_APP_API_URL}/api/user/google_auth`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",  // Set the content type to JSON
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ token: idToken }),  // Send the idToken in the body
+                body: JSON.stringify(userData),
             });
 
             if (response.ok) {
                 const data = await response.json();
                 console.log("Authentication successful:", data);
-                // You can handle further actions, like storing user data or redirecting
             } else {
                 console.error("Authentication failed:", await response.json());
             }
