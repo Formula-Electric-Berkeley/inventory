@@ -53,7 +53,7 @@ def google_auth_user():
             print("CREATING USER")
             create_user(user_id, name, DEFAULT_AUTHMASK)
 
-        return jsonify({"id": user_id})
+        return jsonify({"name": name, "id": user_id})
     except Exception as e:
         return jsonify({"error": str(e)}), 401
 
