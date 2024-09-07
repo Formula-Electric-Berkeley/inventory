@@ -17,14 +17,42 @@ cred = credentials.Certificate(
     "../inventory-a7bb6-firebase-adminsdk-ikk5m-492b597eea.json")
 firebase_admin.initialize_app(cred)
 
+DEFAULT_AUTHMASK = 1918967
+# ITEM_GET ITEM_CREATE ITEM_UPDATE ITEMS_LIST RESERVATION_GET
+# RESERVATION_CREATE RESERVATION_UPDATE RESERVATION_DELETE RESERVATIONS_LIST
+# USER_GET BOX_GET BOX_UPDATE BOXES_LIST THUMBNAIL_GET THUMBNAIL_UPLOAD
+
+
+def create_user(user_id: str, name: str, authmask: str) -> models.User:
+    conn, cursor = common.get_db_connection()
+    existing_user_res = cursor.execute(
+        f'SELECT * FROM {models.User.table_name} WHERE name=?', (name,))
+    existing_users = existing_user_res.fetchall()
+
+    if len(existing_users) != 0:
+        flask.abort(400, 'A user already exists with that name')
+
+    user = models.User(
+        user_id=user_id,
+        api_key=secrets.token_hex(),
+        name=name,
+        authmask=authmask,
+    )
+
+    db.create_entity(conn, cursor, user)
+
 
 @api_user_blueprint.route('/api/user/google_auth', methods=['POST'])
 def google_auth_user():
     token = flask.request.json.get('token')
+    name = flask.request.json.get('name')
     try:
         decoded_token = fauth.verify_id_token(token)
         user_id = decoded_token['uid']
-        # check id against db
+        if not db.get_user_id_exists(user_id):
+            print("CREATING USER")
+            create_user(user_id, name, DEFAULT_AUTHMASK)
+
         return jsonify({"id": user_id})
     except Exception as e:
         return jsonify({"error": str(e)}), 401
@@ -43,22 +71,8 @@ def api_user_get():
 def api_user_create():
     # TODO documentation
     form = common.FlaskPOSTForm(flask.request.form)
-    conn, cursor = common.get_db_connection()
-
-    existing_user_res = cursor.execute(
-        f'SELECT * FROM {models.User.table_name} WHERE name=?', (form.get('name'),))
-    existing_users = existing_user_res.fetchall()
-    if len(existing_users) != 0:
-        flask.abort(400, 'A user already exists with that name')
-
-    user = models.User(
-        user_id=Identifier(length=models.User.id_length),
-        api_key=secrets.token_hex(),
-        name=form.get('name'),
-        authmask=form.get('authmask'),
-    )
-    db.create_entity(conn, cursor, user)
-    return user.to_response()
+    return create_user(Identifier(length=models.User.id_length),
+                       form.get('name'), form.get('authmask')).to_response()
 
 
 @api_user_blueprint.route('/api/user/update', methods=['POST'])
