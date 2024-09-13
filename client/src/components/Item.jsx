@@ -1,11 +1,14 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { faArrowLeft, faMicrochip, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faBarcode, faMicrochip, faTrash } from '@fortawesome/free-solid-svg-icons'
 import QRCode from "react-qr-code";
+import ReactToPrint from "react-to-print";
 
 const Item = () => {
     const { itemId } = useParams();
+
+    const componentRef = useRef();
 
     const [itemData, setItemData] = useState({});
     const [error, setError] = useState(null);
@@ -69,13 +72,20 @@ const Item = () => {
                 <span onClick={handleArrowOnClick}>
                     <FontAwesomeIcon className="fixed top-4 left-4 size-10 cursor-pointer" icon={faArrowLeft} />
                 </span>
+                <ReactToPrint
+                    trigger={() =>
+                        <button>
+                            <FontAwesomeIcon className="fixed top-4 right-24 size-10 cursor-pointer hover:text-gray-500 transition" icon={faBarcode} />
+                        </button>}
+                    content={() => componentRef.current}
+                />
                 <span onClick={handleDeleteItem}>
                     <FontAwesomeIcon className="fixed top-4 right-4 size-10 cursor-pointer hover:text-red-500 transition" icon={faTrash} />
                 </span>
                 <div className="text-center w-[1000px]">
                     <h1 className="text-4xl font-semibold my-10">{itemData.description}</h1>
-                    <div className="flex justify-center items-center m-auto w-60 h-60">
-                        <QRCode value={window.location.href} />
+                    <div ref={componentRef} id="printableDiv" className="flex justify-center items-center m-auto w-100 p-10">
+                        <QRCode className="w-full" value={window.location.href} />
                     </div>
                     {/*
                     <div className="flex justify-center items-center m-auto w-60 h-60 border-2 border-black rounded-2xl">
