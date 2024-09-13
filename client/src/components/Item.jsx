@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { faArrowLeft, faMicrochip, faTrash } from '@fortawesome/free-solid-svg-icons'
+import QRCode from "react-qr-code";
 
 const Item = () => {
     const { itemId } = useParams();
@@ -73,9 +74,14 @@ const Item = () => {
                 </span>
                 <div className="text-center w-[1000px]">
                     <h1 className="text-4xl font-semibold my-10">{itemData.description}</h1>
+                    <div className="flex justify-center items-center m-auto w-60 h-60">
+                        <QRCode value={window.location.href} />
+                    </div>
+                    {/*
                     <div className="flex justify-center items-center m-auto w-60 h-60 border-2 border-black rounded-2xl">
                         <FontAwesomeIcon className="size-20" icon={faMicrochip} />
                     </div>
+                    */}
                     <div className="flex justify-between w-full mt-10">
                         <div className="w-64 py-5 border-2 border-black rounded-2xl">
                             <h1 className="text-3xl font-bold">{itemData.box_id}</h1>
