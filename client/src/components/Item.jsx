@@ -2,8 +2,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { faArrowLeft, faBarcode, faMicrochip, faTrash } from '@fortawesome/free-solid-svg-icons'
-import QRCode from "react-qr-code";
 import ReactToPrint from "react-to-print";
+import ItemQrCode from "./QrCode";
 
 const Item = () => {
     const { itemId } = useParams();
@@ -75,7 +75,7 @@ const Item = () => {
                 <ReactToPrint
                     trigger={() =>
                         <button>
-                            <FontAwesomeIcon className="fixed top-4 right-24 size-10 cursor-pointer hover:text-gray-500 transition" icon={faBarcode} />
+                            <FontAwesomeIcon className="fixed top-4 right-20 size-10 cursor-pointer hover:text-gray-500 transition" icon={faBarcode} />
                         </button>}
                     content={() => componentRef.current}
                 />
@@ -84,14 +84,15 @@ const Item = () => {
                 </span>
                 <div className="text-center w-[1000px]">
                     <h1 className="text-4xl font-semibold my-10">{itemData.description}</h1>
-                    <div ref={componentRef} id="printableDiv" className="flex justify-center items-center m-auto w-100 p-10">
-                        <QRCode className="w-full" value={window.location.href} />
+                    <div className="hidden">
+                        <div ref={componentRef}>
+                            <ItemQrCode link={window.location.href} boxId={itemData.box_id}
+                                mfgNum={itemData.mfg_part_number} desc={itemData.description} />
+                        </div>
                     </div>
-                    {/*
                     <div className="flex justify-center items-center m-auto w-60 h-60 border-2 border-black rounded-2xl">
                         <FontAwesomeIcon className="size-20" icon={faMicrochip} />
                     </div>
-                    */}
                     <div className="flex justify-between w-full mt-10">
                         <div className="w-64 py-5 border-2 border-black rounded-2xl">
                             <h1 className="text-3xl font-bold">{itemData.box_id}</h1>
