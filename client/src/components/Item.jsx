@@ -80,7 +80,7 @@ const Item = () => {
                     content={() => componentRef.current}
                 />
                 <span onClick={handleDeleteItem}>
-                    <FontAwesomeIcon className="fixed top-4 right-4 size-10 cursor-pointer hover:text-red-500 transition" icon={faTrash} />
+                    <FontAwesomeIcon className="fixed top-4 right-5 size-10 cursor-pointer hover:text-red-500 transition" icon={faTrash} />
                 </span>
                 <div className="text-center w-[1000px]">
                     <h1 className="text-4xl font-semibold my-10">{itemData.description}</h1>
