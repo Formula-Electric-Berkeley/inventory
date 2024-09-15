@@ -31,11 +31,11 @@ const Table = () => {
         const formdata = new FormData();
         formdata.append("box_id", newBoxID);
         formdata.append("mfg_part_number", newMfgPN);
-        formdata.append("quantity",newQuantity);
+        formdata.append("quantity", newQuantity);
         formdata.append("description", newDescription);
         formdata.append("digikey_part_number", newDigikeyPN);
         formdata.append("mouser_part_number", newMouserPN);
-        formdata.append("jlcpcb_part_number",newJlcpcbPN);
+        formdata.append("jlcpcb_part_number", newJlcpcbPN);
         formdata.append("api_key", "636e0c5c873afcef9a6fa5996edc9c8da49891b7b1ffbdb1720221ccf1e0e184");
 
         const requestOptions = {
@@ -44,10 +44,9 @@ const Table = () => {
             redirect: "follow"
         };
 
-        fetch(`${window.env.REACT_APP_API_URL}/api/item/create`, requestOptions)
-            .then((response) => response.text())
-            .then(() => window.location.href = '/')
-            .catch((error) => alert(error));
+        fetch(`${window.env.REACT_APP_API_URL}/api/item/create`, requestOptions).then((response) => {
+            if (!response.ok) { alert(response.statusText) } else { window.location.href = '/' }
+        })
     }
 
     const [colDefs] = useState([
