@@ -8,7 +8,6 @@ import flask
 import models
 from firebase_admin import auth as fauth
 from firebase_admin import credentials
-from flask import jsonify
 from identifier import Identifier
 
 api_user_blueprint = flask.Blueprint('api_user', __name__)
@@ -52,12 +51,11 @@ def google_auth_user():
         decoded_token = fauth.verify_id_token(token)
         user_id = decoded_token['uid']
         if not db.get_user_id_exists(user_id):
-            print('CREATING USER')
             create_user(user_id, name, DEFAULT_AUTHMASK)
 
-        return jsonify({'name': name, 'id': user_id})
+        return flask.jsonify({'name': name, 'id': user_id})
     except Exception as e:
-        return jsonify({'error': str(e)}), 401
+        return flask.jsonify({'error': str(e)}), 401
 
 
 @api_user_blueprint.route('/api/user/get', methods=['POST'])
