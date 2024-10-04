@@ -3,18 +3,19 @@ import secrets
 import auth
 import common
 import db
+import firebase_admin
 import flask
 import models
-from flask import jsonify
-import firebase_admin
-from firebase_admin import credentials
 from firebase_admin import auth as fauth
+from firebase_admin import credentials
+from flask import jsonify
 from identifier import Identifier
 
 api_user_blueprint = flask.Blueprint('api_user', __name__)
 
 cred = credentials.Certificate(
-    "../inventory-a7bb6-firebase-adminsdk-ikk5m-492b597eea.json")
+    '../inventory-a7bb6-firebase-adminsdk-ikk5m-492b597eea.json',
+)
 firebase_admin.initialize_app(cred)
 
 DEFAULT_AUTHMASK = 1918967
@@ -26,7 +27,8 @@ DEFAULT_AUTHMASK = 1918967
 def create_user(user_id: str, name: str, authmask: str) -> models.User:
     conn, cursor = common.get_db_connection()
     existing_user_res = cursor.execute(
-        f'SELECT * FROM {models.User.table_name} WHERE name=?', (name,))
+        f'SELECT * FROM {models.User.table_name} WHERE name=?', (name,),
+    )
     existing_users = existing_user_res.fetchall()
 
     if len(existing_users) != 0:
@@ -50,12 +52,12 @@ def google_auth_user():
         decoded_token = fauth.verify_id_token(token)
         user_id = decoded_token['uid']
         if not db.get_user_id_exists(user_id):
-            print("CREATING USER")
+            print('CREATING USER')
             create_user(user_id, name, DEFAULT_AUTHMASK)
 
-        return jsonify({"name": name, "id": user_id})
+        return jsonify({'name': name, 'id': user_id})
     except Exception as e:
-        return jsonify({"error": str(e)}), 401
+        return jsonify({'error': str(e)}), 401
 
 
 @api_user_blueprint.route('/api/user/get', methods=['POST'])
@@ -71,8 +73,10 @@ def api_user_get():
 def api_user_create():
     # TODO documentation
     form = common.FlaskPOSTForm(flask.request.form)
-    return create_user(Identifier(length=models.User.id_length),
-                       form.get('name'), form.get('authmask')).to_response()
+    return create_user(
+        Identifier(length=models.User.id_length),
+        form.get('name'), form.get('authmask'),
+    ).to_response()
 
 
 @api_user_blueprint.route('/api/user/update', methods=['POST'])
