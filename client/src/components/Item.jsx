@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { faArrowLeft, faBarcode, faMicrochip, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faBarcode, faMicrochip, faPen, faSave, faTrash } from '@fortawesome/free-solid-svg-icons'
 import ReactToPrint from "react-to-print";
 import ItemQrCode from "./QrCode";
 
@@ -12,6 +12,8 @@ const Item = () => {
 
     const [itemData, setItemData] = useState({});
     const [error, setError] = useState(null);
+
+    const [inEditMode, setInEditMode] = useState(false);
 
     useEffect(() => {
         const fetchParts = async () => {
@@ -71,6 +73,9 @@ const Item = () => {
             <div className='flex justify-center'>
                 <span onClick={handleArrowOnClick}>
                     <FontAwesomeIcon className="fixed top-4 left-4 size-10 cursor-pointer" icon={faArrowLeft} />
+                </span>
+                <span>
+                    <FontAwesomeIcon className="fixed top-4 right-36 size-10 cursor-pointer hover:text-gray-500" onClick={() => {setInEditMode(!inEditMode)}} icon={inEditMode ? faSave : faPen} />
                 </span>
                 <ReactToPrint
                     trigger={() =>
