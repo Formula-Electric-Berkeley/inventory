@@ -13,7 +13,7 @@ from identifier import Identifier
 api_user_blueprint = flask.Blueprint('api_user', __name__)
 
 cred = credentials.Certificate(
-    '../inventory-a7bb6-firebase-adminsdk-ikk5m-492b597eea.json',
+    'inventory-a7bb6-firebase-adminsdk-ikk5m-492b597eea.json',
 )
 firebase_admin.initialize_app(cred)
 
