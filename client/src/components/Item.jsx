@@ -1,9 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { faArrowLeft, faBarcode, faMicrochip, faPen, faSave, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faBarcode, faMicrochip, faPen, faSave, faTrash, faCirclePlus, faCircleMinus } from '@fortawesome/free-solid-svg-icons'
 import ReactToPrint from "react-to-print";
 import ItemQrCode from "./QrCode";
+import classnames from 'classnames';
 
 const Item = () => {
     const { itemId } = useParams();
@@ -40,11 +41,40 @@ const Item = () => {
         window.location.href = '/'
     }
 
+    const handleUpdateItemData = () => {
+        const formdata = new FormData();
+
+        formdata.append("api_key", "32596ec571459d45a79907daabe8c63edb866227fbf93de6fbe8f0f9e50b9e29");
+        formdata.append("item_id", itemId)
+        formdata.append("box_id", itemData.box_id)
+        formdata.append("mfg_part_number", itemData.mfg_part_number)
+        formdata.append("quantity", itemData.quantity)
+        formdata.append("description", itemData.description)
+        formdata.append("digikey_part_number", itemData.digikey_part_number)
+        formdata.append("mouser_part_number", itemData.mouser_part_number)
+        formdata.append("jlcpcb_part_number", itemData.jlcpcb_part_number)
+
+        const requestOptions = {
+            method: "POST",
+            body: formdata,
+        };
+
+        fetch(`${window.env.REACT_APP_API_URL}/api/item/update`, requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    alert("Item Updated Successfully!")
+                }
+            })
+            .catch((error) => alert(error));
+
+        setInEditMode(!inEditMode);
+    }
+
     const handleDeleteItem = () => {
         if (confirm("Are you sure you want to delete this item?\nThis action cannot be undone.")) {
             const formdata = new FormData();
             formdata.append("item_id", itemId);
-            formdata.append("api_key", "636e0c5c873afcef9a6fa5996edc9c8da49891b7b1ffbdb1720221ccf1e0e184");
+            formdata.append("api_key", "32596ec571459d45a79907daabe8c63edb866227fbf93de6fbe8f0f9e50b9e29");
 
             const requestOptions = {
                 method: "POST",
@@ -75,7 +105,7 @@ const Item = () => {
                     <FontAwesomeIcon className="fixed top-4 left-4 size-10 cursor-pointer" icon={faArrowLeft} />
                 </span>
                 <span>
-                    <FontAwesomeIcon className="fixed top-4 right-36 size-10 cursor-pointer hover:text-gray-500" onClick={() => {setInEditMode(!inEditMode)}} icon={inEditMode ? faSave : faPen} />
+                    <FontAwesomeIcon className="fixed top-4 right-36 size-10 cursor-pointer hover:text-gray-500" onClick={() => { (inEditMode ? handleUpdateItemData() : setInEditMode(!inEditMode)) }} icon={inEditMode ? faSave : faPen} />
                 </span>
                 <ReactToPrint
                     trigger={() =>
@@ -103,8 +133,26 @@ const Item = () => {
                             <h1 className="text-3xl font-bold">{itemData.box_id}</h1>
                             <h1 className="text-xl">Box ID</h1>
                         </div>
-                        <div className="w-64 py-5 border-2 border-black rounded-2xl">
-                            <h1 className="text-3xl font-bold">{itemData.quantity}</h1>
+                        <div className="w-64 py-5 border-2 border-black rounded-2xl flex flex-col">
+                            <div className="w-full flex flex-row items-center justify-between text-center px-8">
+                                <a onClick={() =>
+                                    setItemData(prevState => ({
+                                        ...prevState,
+                                        quantity: String(Number(itemData.quantity) - 1)
+                                    }))
+                                }>
+                                    <FontAwesomeIcon className={classnames(inEditMode ? "w-7 h-7" : "w-0")} icon={faCircleMinus} />
+                                </a>
+                                <h1 className="text-3xl font-bold">{itemData.quantity}</h1>
+                                <a onClick={() =>
+                                    setItemData(prevState => ({
+                                        ...prevState,
+                                        quantity: String(Number(itemData.quantity) + 1)
+                                    }))
+                                }>
+                                    <FontAwesomeIcon className={classnames(inEditMode ? "w-7 h-7" : "w-0")} icon={faCirclePlus} />
+                                </a>
+                            </div>
                             <h1 className="text-xl">Quantity</h1>
                         </div>
                         <div className="w-64 py-5 border-2 border-black rounded-2xl">
@@ -127,7 +175,7 @@ const Item = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 };
