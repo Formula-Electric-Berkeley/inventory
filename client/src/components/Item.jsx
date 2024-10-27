@@ -44,7 +44,7 @@ const Item = () => {
     const handleUpdateItemData = () => {
         const formdata = new FormData();
 
-        formdata.append("api_key", "32596ec571459d45a79907daabe8c63edb866227fbf93de6fbe8f0f9e50b9e29");
+        formdata.append("api_key", "636e0c5c873afcef9a6fa5996edc9c8da49891b7b1ffbdb1720221ccf1e0e184");
         formdata.append("item_id", itemId)
         formdata.append("box_id", itemData.box_id)
         formdata.append("mfg_part_number", itemData.mfg_part_number)
@@ -74,7 +74,7 @@ const Item = () => {
         if (confirm("Are you sure you want to delete this item?\nThis action cannot be undone.")) {
             const formdata = new FormData();
             formdata.append("item_id", itemId);
-            formdata.append("api_key", "32596ec571459d45a79907daabe8c63edb866227fbf93de6fbe8f0f9e50b9e29");
+            formdata.append("api_key", "636e0c5c873afcef9a6fa5996edc9c8da49891b7b1ffbdb1720221ccf1e0e184");
 
             const requestOptions = {
                 method: "POST",
@@ -155,11 +155,12 @@ const Item = () => {
                                         quantity: String(Number(itemData.quantity) - 1)
                                     }))
                                 }>
-                                    <FontAwesomeIcon className={classnames(inEditMode ? "w-7 h-7" : "w-0")} icon={faCircleMinus} />
+                                    <FontAwesomeIcon className={classnames(inEditMode ? "w-7 h-7 hover:cursor-pointer" : "w-0")} icon={faCircleMinus} />
                                 </a>
                                 {inEditMode ?
                                     <input
                                         className="text-3xl font-bold w-full text-center"
+                                        value={itemData.quantity}
                                         defaultValue={itemData.quantity}
                                         onChange={(e) =>
                                             setItemData(prevState => ({
@@ -177,7 +178,7 @@ const Item = () => {
                                         quantity: String(Number(itemData.quantity) + 1)
                                     }))
                                 }>
-                                    <FontAwesomeIcon className={classnames(inEditMode ? "w-7 h-7" : "w-0")} icon={faCirclePlus} />
+                                    <FontAwesomeIcon className={classnames(inEditMode ? "w-7 h-7 hover:cursor-pointer" : "w-0")} icon={faCirclePlus} />
                                 </a>
                             </div>
                             <h1 className="text-xl">Quantity</h1>
