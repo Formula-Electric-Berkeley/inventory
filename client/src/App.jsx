@@ -7,7 +7,7 @@ import Item from './components/Item';
 function App() {
     return (
         <BrowserRouter>
-            <Routes basename="/inventory">
+            <Routes basename={import.meta.env.BASE_URL}>
                 <Route path="/" element={<Landing />} />
                 <Route path="/item/:itemId" element={<Item />} />
             </Routes>
