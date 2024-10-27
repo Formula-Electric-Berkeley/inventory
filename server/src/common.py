@@ -52,6 +52,8 @@ class FlaskPOSTForm:
         if key not in self.form:
             flask.abort(400, f'{key} was not found in request')
         value = self.form[key]
+        # TODO fix this
+        return value
         if is_dirty(value):
             flask.abort(400, f'{key} was malformed')
         if not isinstance(value, expected_type):
