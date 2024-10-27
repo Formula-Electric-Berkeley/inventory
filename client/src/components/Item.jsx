@@ -130,7 +130,21 @@ const Item = () => {
                     </div>
                     <div className="flex justify-between w-full mt-10">
                         <div className="w-64 py-5 border-2 border-black rounded-2xl">
-                            <h1 className="text-3xl font-bold">{itemData.box_id}</h1>
+                            {inEditMode ?
+                                <input
+                                    className="text-3xl font-bold w-full text-center"
+                                    defaultValue={itemData.box_id}
+                                    onChange={(e) =>
+                                        setItemData(prevState => ({
+                                            ...prevState,
+                                            box_id: e.target.value
+                                        }))
+                                    }
+                                />
+                                :
+                                <h1 className="text-3xl font-bold">{itemData.box_id}</h1>
+                            }
+
                             <h1 className="text-xl">Box ID</h1>
                         </div>
                         <div className="w-64 py-5 border-2 border-black rounded-2xl flex flex-col">
@@ -143,7 +157,20 @@ const Item = () => {
                                 }>
                                     <FontAwesomeIcon className={classnames(inEditMode ? "w-7 h-7" : "w-0")} icon={faCircleMinus} />
                                 </a>
-                                <h1 className="text-3xl font-bold">{itemData.quantity}</h1>
+                                {inEditMode ?
+                                    <input
+                                        className="text-3xl font-bold w-full text-center"
+                                        defaultValue={itemData.quantity}
+                                        onChange={(e) =>
+                                            setItemData(prevState => ({
+                                                ...prevState,
+                                                quantity: e.target.value
+                                            }))
+                                        }
+                                    />
+                                    :
+                                    <h1 className="text-3xl font-bold">{itemData.quantity}</h1>
+                                }
                                 <a onClick={() =>
                                     setItemData(prevState => ({
                                         ...prevState,
@@ -156,21 +183,73 @@ const Item = () => {
                             <h1 className="text-xl">Quantity</h1>
                         </div>
                         <div className="w-64 py-5 border-2 border-black rounded-2xl">
-                            <h1 className="text-3xl font-bold">{itemData.mfg_part_number}</h1>
+                            {inEditMode ?
+                                <input
+                                    className="text-3xl font-bold w-full text-center"
+                                    defaultValue={itemData.mfg_part_number}
+                                    onChange={(e) =>
+                                        setItemData(prevState => ({
+                                            ...prevState,
+                                            mfg_part_number: e.target.value
+                                        }))
+                                    }
+                                />
+                                :
+                                <h1 className="text-3xl font-bold">{itemData.mfg_part_number}</h1>
+                            }
                             <h1 className="text-xl">Manufacturer PN</h1>
                         </div>
                     </div>
                     <div className="flex justify-between w-full mt-10">
                         <div className="w-64 py-5 border-2 border-black rounded-2xl">
-                            <h1 className="text-3xl font-bold">{itemData.digikey_part_number}</h1>
+                            {inEditMode ?
+                                <input
+                                    className="text-3xl font-bold w-full text-center"
+                                    defaultValue={itemData.digikey_part_number}
+                                    onChange={(e) =>
+                                        setItemData(prevState => ({
+                                            ...prevState,
+                                            digikey_part_number: e.target.value
+                                        }))
+                                    }
+                                />
+                                :
+                                <h1 className="text-3xl font-bold">{itemData.digikey_part_number}</h1>
+                            }
                             <h1 className="text-xl">DigiKey PN</h1>
                         </div>
                         <div className="w-64 py-5 border-2 border-black rounded-2xl">
-                            <h1 className="text-3xl font-bold">{itemData.mouser_part_number}</h1>
+                            {inEditMode ?
+                                <input
+                                    className="text-3xl font-bold w-full text-center"
+                                    defaultValue={itemData.mouser_part_number}
+                                    onChange={(e) =>
+                                        setItemData(prevState => ({
+                                            ...prevState,
+                                            mouser_part_number: e.target.value
+                                        }))
+                                    }
+                                />
+                                :
+                                <h1 className="text-3xl font-bold">{itemData.mouser_part_number}</h1>
+                            }
                             <h1 className="text-xl">Mouser PN</h1>
                         </div>
                         <div className="w-64 py-5 border-2 border-black rounded-2xl">
-                            <h1 className="text-3xl font-bold">{itemData.jlcpcb_part_number}</h1>
+                            {inEditMode ?
+                                <input
+                                    className="text-3xl font-bold w-full text-center"
+                                    defaultValue={itemData.jlcpcb_part_number}
+                                    onChange={(e) =>
+                                        setItemData(prevState => ({
+                                            ...prevState,
+                                            jlcpcb_part_number: e.target.value
+                                        }))
+                                    }
+                                />
+                                :
+                                <h1 className="text-3xl font-bold">{itemData.jlcpcb_part_number}</h1>
+                            }
                             <h1 className="text-xl">JLCPCB PN</h1>
                         </div>
                     </div>
