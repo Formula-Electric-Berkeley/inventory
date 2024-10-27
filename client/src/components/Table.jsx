@@ -36,7 +36,7 @@ const Table = () => {
         formdata.append("digikey_part_number", newDigikeyPN);
         formdata.append("mouser_part_number", newMouserPN);
         formdata.append("jlcpcb_part_number", newJlcpcbPN);
-        formdata.append("api_key", "636e0c5c873afcef9a6fa5996edc9c8da49891b7b1ffbdb1720221ccf1e0e184");
+        formdata.append("api_key", "32596ec571459d45a79907daabe8c63edb866227fbf93de6fbe8f0f9e50b9e29");
 
         const requestOptions = {
             method: "POST",
