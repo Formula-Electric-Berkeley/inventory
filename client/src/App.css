@@ -5,6 +5,7 @@
 @media print {
     body * {
         visibility: hidden;
+    }
 }
 
 #printableDiv, #printableDiv * {
