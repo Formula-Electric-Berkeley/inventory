@@ -132,7 +132,7 @@ def drop_all_tables() -> None:
 
 
 def create_user(scope: Optional[auth.Scope] = None) -> models.User:
-    authmask = ((0b1 << len(auth.Scope)) - 1) if scope is None else scope.value
+    authmask = max_authmask() if scope is None else scope.value
     scope_name = 'superuser' if scope is None else scope.name
     user = models.User(
         user_id=Identifier(length=models.User.id_length),
@@ -143,6 +143,10 @@ def create_user(scope: Optional[auth.Scope] = None) -> models.User:
     conn, cursor = common.get_db_connection()
     db.create_entity(conn, cursor, user)
     return user
+
+
+def max_authmask() -> int:
+    return (0b1 << len(auth.Scope)) - 1
 
 
 def attrs_to_params(attrs: Dict[str, str]) -> str:

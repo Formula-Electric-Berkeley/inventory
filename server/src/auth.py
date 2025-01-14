@@ -38,6 +38,7 @@ class Scope(enum.IntFlag):
     RESERVATION_DELETE = enum.auto()
     RESERVATIONS_LIST = enum.auto()
     USER_GET = enum.auto()
+    USER_GET_AUTHMASK = enum.auto()
     USER_CREATE = enum.auto()
     USER_UPDATE = enum.auto()
     USER_DELETE = enum.auto()
