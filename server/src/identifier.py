@@ -9,7 +9,7 @@ import flask
 
 _alphabet = string.ascii_lowercase + (string.digits * 2)
 # TODO documentation
-# Increase the probability of getting a digit (otherwise few digits appear)
+# TODO Increase the probability of getting a digit (otherwise few digits appear)
 
 
 class IdInitializerError(ValueError):

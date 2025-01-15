@@ -140,3 +140,4 @@ server/**/*.db-journal
 server/docs/build
 server/thumbnails/*
 !server/thumbnails/.gitkeep
+server/*.json

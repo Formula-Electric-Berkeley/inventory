@@ -14,7 +14,13 @@ from werkzeug.exceptions import HTTPException
 
 
 def _create_table(entity_type: Type[models.Model]):
-    # TODO documentation
+    """
+    Creates a single table in the backing database
+    representing a store for a passed model type.
+
+    Assumes an ``INTEGER`` data type if the backing data is of type ``int``,
+    otherwise assumes type ``TEXT`` (i.e. ``VARCHAR``).
+    """
     model_keys = models.get_model_attributes(entity_type).items()
     table_keys = ', '.join([f'{k} {"INTEGER" if isinstance(v, int) else "TEXT"}' for k, v in model_keys])
     conn, cursor = common.get_db_connection()
@@ -22,7 +28,10 @@ def _create_table(entity_type: Type[models.Model]):
 
 
 def _create_tables():
-    # TODO documentation
+    """
+    Creates all tables in the backing database
+    representing stores for all model types (:py:class:`models.Box`).
+    """
     with app.app_context():
         _create_table(models.Item)
         _create_table(models.User)
@@ -45,7 +54,7 @@ app.register_blueprint(api_thumbnail_blueprint)
 
 @app.teardown_appcontext
 def close_connection(exception):
-    # TODO documentation
+    """Close database connection, if previously opened."""
     db = getattr(flask.g, '_database', None)
     if db is not None:
         db.close()
