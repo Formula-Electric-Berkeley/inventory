@@ -4,6 +4,7 @@ Defines models for all database entries and associated helpers.
 Contains required attribute names and types for each model.
 """
 import inspect
+import sched
 import time
 from abc import ABC
 from abc import abstractmethod
@@ -160,30 +161,39 @@ class EntityCache:
 
     def __init__(self):
         self._map: Dict[EntityCacheKey, List[Model]] = {}
+        self._scheduler: sched.scheduler = sched.scheduler()
 
     def add(self, key: EntityCacheKey, entities: List[Model]) -> None:
-        """Add an entry (list of entities) to the cache if the entry contains at least 1 entity."""
+        """
+        Add an entry (list of entities) to the cache if the entry contains at least 1 entity.
+
+        Schedules an event at the key's expiry time to expire the entry automatically.
+        """
         if len(entities) > 0:
             self._map[key] = entities
+            self._scheduler.enterabs(key.expiry_time, 1, self._map.pop, key)
+            # Only run if (len(scheduler queue) == 1) since:
+            # - if (== 0): the queue is empty (edge case)
+            # - if (> 1): the scheduler is still running from another add()
+            if len(self._scheduler.queue) == 1:
+                self._scheduler.run(blocking=False)
 
     def get(self, key: EntityCacheKey) -> Optional[List[Model]]:
         """
         Get an entry (list of entities) matching the provided
         key from the cache if it exists.
 
-        May expire any number of (zero, one, or multiple) cache
-        entries that are over their expiry TTL. Not guaranteed
-        to expire all expired cache entries.
+        May expire the cache entry corresponding to the key if
+        it exists and is over its expiry TTL
 
         :return: an entry (list of entities) if the key matched
                  a cache entry, else ``None``.
         """
-        for k in self._map.copy():
-            if k.expiry_time > time.time():
-                self._map.pop(k)
-                continue
-            if key is k:
-                return self._map[k]
+        if key in self._map:
+            if key.expiry_time <= time.time():
+                self._map.pop(key)
+            else:
+                return self._map[key]
         return None
 
     @staticmethod
