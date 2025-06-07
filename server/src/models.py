@@ -131,11 +131,18 @@ class Box(Model):
 
 
 class EntityCacheKey:
-    # TODO documentation
+    """
+    Key class for :py:class:`EntityCache` representing some entity type (:py:class:`Model`)
+    with any number of optional `kwargs` specifying the selectivity of the key.
+
+    Expiry of the data stored in the cache at this key is determined by the time the key
+    is created, plus some TTL (`ttl_sec`). Expiry time is ignored in comparisons.
+    """
+
     def __init__(self, entity_type: Type[Model], ttl_sec: int = 3600, **kwargs):
-        self.kwargs = kwargs
         self.entity_type = entity_type
         self.expiry_time = int(time.time()) + ttl_sec
+        self.kwargs = kwargs
 
     def __eq__(self, other):
         # Ignore expiry time in equality comparisons
@@ -144,7 +151,7 @@ class EntityCacheKey:
             and (self.kwargs == other.kwargs)
 
     def __hash__(self):
-        return hash((*self.kwargs.values(), self.entity_type))
+        return hash((self.entity_type, *self.kwargs.values()))
 
 
 class EntityCache:
@@ -183,8 +190,9 @@ class EntityCache:
         Get an entry (list of entities) matching the provided
         key from the cache if it exists.
 
-        May expire the cache entry corresponding to the key if
-        it exists and is over its expiry TTL
+        Will expire the cache entry corresponding to the key if
+        it exists and is over its expiry TTL. This functions as
+        an additional check to the scheduler's expiry event.
 
         :return: an entry (list of entities) if the key matched
                  a cache entry, else ``None``.
@@ -197,7 +205,7 @@ class EntityCache:
         return None
 
     def clear(self) -> None:
-        # TODO documentation
+        """Clear all entries from this cache instance, and cancel all scheduled expiry events."""
         self._map.clear()
         for e in self._scheduler.queue:
             self._scheduler.cancel(e)

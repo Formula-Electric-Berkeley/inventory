@@ -53,7 +53,7 @@ class TestBoxCreate(tstutil.TestBase, tstutil.AuthorizedTests):
         return self.client.post('/api/box/create', data=attrs)
 
 
-class TestBoxGet(tstutil.TestBase, tstutil.IdTests):
+class BoxGetTestBase(tstutil.IdTests):
     entity_type = models.Box
 
     def setUp(self):
@@ -77,20 +77,15 @@ class TestBoxGet(tstutil.TestBase, tstutil.IdTests):
             },
         )
 
+
+class TestBoxGetDynamicGET(BoxGetTestBase, tstutil.TestBase):
     def call_route(self, attrs: Dict[str, str]):
         params = tstutil.attrs_to_params(attrs)
         url = f'/api/box/get?{params}'
         return self.client.get(url)
 
 
-class TestBoxGetDynamicGET(TestBoxGet):
-    def call_route(self, attrs: Dict[str, str]):
-        params = tstutil.attrs_to_params(attrs)
-        url = f'/api/box/get?{params}'
-        return self.client.get(url)
-
-
-class TestBoxGetStaticGET(TestBoxGet):
+class TestBoxGetStaticGET(BoxGetTestBase, tstutil.TestBase):
     def test_400_no_id(self):
         # Static route requires an ID by definition
         pass

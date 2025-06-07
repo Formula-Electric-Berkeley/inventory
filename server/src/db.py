@@ -155,10 +155,10 @@ def count(entity_type: Type[models.Model]) -> Response:
     _, cursor = common.get_db_connection()
     query = f'SELECT COUNT(*) FROM {entity_type.table_name}'
     res = cursor.execute(query)
-    item_count = res.fetchone()
-    if len(item_count) != 1:
-        flask.abort(503, f'could not count {entity_type.table_name}')
-    return common.create_response(200, [{'count': int(item_count[0])}])
+    entity_count = res.fetchone()
+    if len(entity_count) != 1:
+        flask.abort(500, f'could not count {entity_type.table_name}')
+    return common.create_response(200, [{'count': int(entity_count[0])}])
 
 
 def get_int_parameter(key: str, default: int, request_parameters) -> int:

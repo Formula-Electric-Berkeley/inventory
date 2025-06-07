@@ -195,5 +195,17 @@ def api_items_list():
 
 @api_item_blueprint.route('/api/items/count', methods=['GET'])
 def api_items_count():
-    # TODO documentation
+    """
+    Count the total number of inventory items. ::
+
+        GET /api/items/count
+
+    This endpoint does not follow a standard :py:class:`models.Model` list format.
+    Instead, the count is embedded within the standard response body as ::
+
+        { 'count': item_count (int) }
+
+    :return: ``200`` on success with the total item count (see formatting above),\n
+             ``500`` if the item count returned a non-one number of values
+    """
     return db.count(entity_type=models.Item)

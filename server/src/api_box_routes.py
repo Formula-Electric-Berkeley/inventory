@@ -177,5 +177,17 @@ def api_boxes_list():
 
 @api_box_blueprint.route('/api/boxes/count', methods=['GET'])
 def api_boxes_count():
-    # TODO documentation
+    """
+    Count the total number of inventory boxes. ::
+
+        GET /api/boxes/count
+
+    This endpoint does not follow a standard :py:class:`models.Model` list format.
+    Instead, the count is embedded within the standard response body as ::
+
+        { 'count': box_count (int) }
+
+    :return: ``200`` on success with the total box count (see formatting above),\n
+             ``500`` if the box count returned a non-one number of values
+    """
     return db.count(entity_type=models.Box)

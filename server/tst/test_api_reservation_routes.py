@@ -15,15 +15,29 @@ class TestReservationCreate(tstutil.TestBase, tstutil.AuthorizedTests):
         return self.client.post('/api/reservation/create', data=attrs)
 
 
-# TODO uncomment this when implemented; issue with GET method
-# class TestReservationGet(tstutil.TestBase, tstutil.IdTests):
-#     entity_type = models.Reservation
-#
-#     def test_200(self):
-#         pass
-#
-#     def call_route(self, attrs: Dict[str, str]):
-#         return self.client.post('/api/reservation/get', data=attrs)
+class ReservationGetTestBase(tstutil.IdTests):
+    entity_type = models.Reservation
+
+    def test_200(self):
+        # TODO implement
+        pass
+
+
+class TestReservationGetDynamicGET(ReservationGetTestBase, tstutil.TestBase):
+    def call_route(self, attrs: Dict[str, str]):
+        params = tstutil.attrs_to_params(attrs)
+        url = f'/api/reservation/get?{params}'
+        return self.client.get(url)
+
+
+class TestReservationGetStaticGET(ReservationGetTestBase, tstutil.TestBase):
+    def test_400_no_id(self):
+        # Static route requires an ID by definition
+        pass
+
+    def call_route(self, attrs: Dict[str, str]):
+        url = f'/api/reservation/get/{attrs[models.Reservation.id_name]}'
+        return self.client.get(url)
 
 
 class TestReservationUpdate(tstutil.TestBase, tstutil.AuthorizedTests, tstutil.IdTests):
