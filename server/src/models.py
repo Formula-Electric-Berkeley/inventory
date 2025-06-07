@@ -38,7 +38,8 @@ class Model(ABC):
         return self.to_insert_str()
 
     def __repr__(self):
-        return self.to_insert_str()
+        attrs = ', '.join(f'{k}={v}' for k, v in self.to_dict().items())
+        return f'{self.__class__.__name__}({attrs})'
 
     def __iter__(self):
         for v in self.to_dict().values():
@@ -131,20 +132,19 @@ class Box(Model):
 
 class EntityCacheKey:
     # TODO documentation
-    def __init__(self, direction: str, sortby: Optional[str], entity_type: Type[Model], ttl_sec: int = 3600):
-        self.direction = direction
-        self.sortby = sortby
+    def __init__(self, entity_type: Type[Model], ttl_sec: int = 3600, **kwargs):
+        self.kwargs = kwargs
         self.entity_type = entity_type
         self.expiry_time = int(time.time()) + ttl_sec
 
     def __eq__(self, other):
         # Ignore expiry time in equality comparisons
         return isinstance(other, EntityCacheKey) \
-            and (self.sortby is other.sortby) \
-            and (self.entity_type is other.entity_type)
+            and (self.entity_type is other.entity_type) \
+            and (self.kwargs == other.kwargs)
 
     def __hash__(self):
-        return hash((self.sortby, self.entity_type))
+        return hash((*self.kwargs.values(), self.entity_type))
 
 
 class EntityCache:
@@ -195,6 +195,12 @@ class EntityCache:
             else:
                 return self._map[key]
         return None
+
+    def clear(self) -> None:
+        # TODO documentation
+        self._map.clear()
+        for e in self._scheduler.queue:
+            self._scheduler.cancel(e)
 
     @staticmethod
     def cut(entities: List[Model], limit: int, offset: int):

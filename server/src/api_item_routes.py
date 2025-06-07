@@ -191,3 +191,9 @@ def api_items_list():
              ``400`` if ``offset`` is not an integer (digit string)
     """
     return db.list_(entity_type=models.Item)
+
+
+@api_item_blueprint.route('/api/items/count', methods=['GET'])
+def api_items_count():
+    # TODO documentation
+    return db.count(entity_type=models.Item)

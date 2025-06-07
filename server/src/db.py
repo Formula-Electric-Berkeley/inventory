@@ -55,8 +55,7 @@ def update(entity_type: Type[models.Model], immutable_props: List[str]) -> Respo
         entity_properties.pop(immutable_prop)
 
     properties_to_update = {
-        k: v for k,
-        v in entity_properties.items() if k in form.form
+        k: v for k, v in entity_properties.items() if k in form.form
     }
     if len(properties_to_update) <= 0:
         flask.abort(400, 'No attributes to be updated were provided')
@@ -137,7 +136,7 @@ def list_(entity_type: Type[models.Model]) -> Response:
     else:
         query = f'SELECT * FROM {entity_type.table_name}'
 
-    cache_key = models.EntityCacheKey(direction, sortby, entity_type)
+    cache_key = models.EntityCacheKey(entity_type, direction=direction, sortby=sortby)
     cached_result = _list_cache.get(cache_key)
     if cached_result is not None:
         entities = cached_result
@@ -149,6 +148,17 @@ def list_(entity_type: Type[models.Model]) -> Response:
 
     cut_entities = models.EntityCache.cut(entities, limit, offset)
     return common.create_response(200, [item.to_dict() for item in cut_entities])
+
+
+def count(entity_type: Type[models.Model]) -> Response:
+    # TODO documentation
+    _, cursor = common.get_db_connection()
+    query = f'SELECT COUNT(*) FROM {entity_type.table_name}'
+    res = cursor.execute(query)
+    item_count = res.fetchone()
+    if len(item_count) != 1:
+        flask.abort(503, f'could not count {entity_type.table_name}')
+    return common.create_response(200, [{'count': int(item_count[0])}])
 
 
 def get_int_parameter(key: str, default: int, request_parameters) -> int:

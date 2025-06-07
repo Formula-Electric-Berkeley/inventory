@@ -173,3 +173,9 @@ def api_boxes_list():
              ``400`` if ``offset`` is not an integer (digit string)
     """
     return db.list_(entity_type=models.Box)
+
+
+@api_box_blueprint.route('/api/boxes/count', methods=['GET'])
+def api_boxes_count():
+    # TODO documentation
+    return db.count(entity_type=models.Box)

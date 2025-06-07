@@ -75,3 +75,9 @@ def api_reservation_delete():
 def api_reservations_list():
     # TODO documentation
     return db.list_(entity_type=models.Reservation)
+
+
+@api_reservation_blueprint.route('/api/reservations/count', methods=['GET'])
+def api_reservations_count():
+    # TODO documentation
+    return db.count(entity_type=models.Reservation)

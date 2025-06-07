@@ -222,15 +222,25 @@ class TestBoxesList(tstutil.TestBase):
         resp_entities = [models.Box(*entity_json.values()) for entity_json in resp_json['body']]
         self.assertListEqual(resp_entities, boxes[min_:max_])
 
+    def _count_boxes(self):
+        attrs = {
+            auth.API_KEY_NAME: self.superuser.api_key,
+        }
+        params = tstutil.attrs_to_params(attrs)
+        resp = self.client.get(f'/api/boxes/count?{params}')
+        data = json.loads(resp.data)
+        return int(data['body'][0]['count'])
+
     def test_200(self):
         limit = 20
         offset = 50
         self._call_route_assert_limit_offset(120, limit, offset, offset, limit + offset)
 
     def test_200_truncate_end(self):
-        limit = 20
-        offset = 50
-        self._call_route_assert_limit_offset(60, limit, offset, offset, 60)
+        current_count = self._count_boxes()
+        n = 10
+        limit = 5
+        self._call_route_assert_limit_offset(n, limit, current_count, current_count, current_count + limit)
 
     def test_200_sortby_desc(self):
         boxes = self._create_n_boxes(20)

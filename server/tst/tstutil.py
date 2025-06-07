@@ -22,6 +22,7 @@ class TestBase(unittest.TestCase):
         self.ctx.push()
         self.client = wsgi.app.test_client()
         drop_all_tables()
+        db._list_cache.clear()
         wsgi._create_tables()
         self.superuser = create_user()
 

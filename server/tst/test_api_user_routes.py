@@ -21,7 +21,7 @@ class TestUserCreate(tstutil.TestBase, tstutil.AuthorizedTests):
                 'name': attrs['name'],
             },
         )
-        self.assertIsNotNone(Identifier(length=models.User.id_length, id_=entity_json[models.Box.id_name]))
+        self.assertIsNotNone(Identifier(length=models.User.id_length, id_=entity_json[models.User.id_name]))
 
     def test_400_no_name(self):
         pass
