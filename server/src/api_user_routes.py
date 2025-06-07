@@ -21,7 +21,6 @@ DEFAULT_AUTHMASK = Scope.ITEM_GET | Scope.ITEM_CREATE | Scope.ITEM_UPDATE | Scop
 api_user_blueprint = flask.Blueprint('api_user', __name__)
 
 
-# TODO cred init not being found on gh actions causes user API docs page to not generate
 cred = credentials.Certificate('../inventory-a7bb6-firebase-adminsdk-ikk5m-492b597eea.json')
 firebase_admin.initialize_app(cred)
 # TODO add doc about firebase not initializing if tst placeholder is included for build

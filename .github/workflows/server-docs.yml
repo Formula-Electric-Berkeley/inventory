@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v3
       - name: Install dependencies
         run: |
-          python -m pip install -r server/requirements.txt
+          python -m pip install -r server/requirements-tst.txt
       - name: Sphinx build
         run: |
           sphinx-build server/docs/source _build
