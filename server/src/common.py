@@ -52,15 +52,16 @@ class FlaskPOSTForm:
         if key not in self.form:
             flask.abort(400, f'{key} was not found in request')
         value = self.form[key]
-        # TODO fix this
-        # return value
         if is_dirty(value):
             flask.abort(400, f'{key} was malformed')
         if not isinstance(value, expected_type):
             try:
-                value = expected_type(value)
+                # Preferable to assume the length is correct than force all Identifier to str
+                # See db#update() when Identifier-intended attribute is being updated
+                value = Identifier(length=len(value), id_=value) \
+                    if expected_type is Identifier else expected_type(value)
             except ValueError:
-                flask.abort(400, f'{key} could not be converter to type {expected_type.__name__}')
+                flask.abort(400, f'{key} could not be converted to type {expected_type.__name__}')
         return value
 
 

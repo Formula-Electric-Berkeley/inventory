@@ -1,4 +1,12 @@
-# TODO documentation
+"""
+Functions interfacing directly with the database.
+
+DB-interfacing functions are parameterized to each :py:class:`models.Model`
+(entity type) and return a :py:data:`common.Response` object for Flask routes.
+
+For exceptions, `flask.abort` is called directly instead of returning
+an errant :py:data:`common.Response`.
+"""
 from sqlite3.dbapi2 import Connection
 from sqlite3.dbapi2 import Cursor
 from typing import List
@@ -13,7 +21,21 @@ from common import Response
 
 
 def get(entity_type: Type[models.Model], id_: Optional[str] = None) -> Response:
-    # TODO documentation
+    """
+    Get a single entity from the database, keyed by its type (`entity_type`), and identifier (`id_`).
+
+    Leaving `id_` as the default value of `None` retrieves `id_` from :py:func:`flask.Request.args`,
+    assuming the `id_` was provided as POST data to the request. The key into the POST data is the
+    `id_name` provided by the :py:class:`models.Model` (entity type).
+
+    :param entity_type: the type of the entity to get (:py:class:`models.Model` subclass)
+    :param id_: for GET requests, the identifier of the entity to retrieve; None (default) for POST requests.
+    :return: ``200`` on success with the desired :py:class:`models.Model`,\n
+             ``400`` if `id_` was not found,\n
+             ``400`` if `id_` was malformed,\n
+             ``404`` if the desired entity was not found (POST only), \n
+             ``500`` if `id_` was not the expected length
+    """
     if id_ is None:
         if entity_type.id_name not in flask.request.args:
             flask.abort(400, f'{entity_type.id_name} was not found in request')
@@ -47,23 +69,21 @@ def update(entity_type: Type[models.Model], immutable_props: List[str]) -> Respo
         flask.abort(404, f'{entity_type.__name__} does not exist')
 
     entity_properties = models.get_model_attributes(entity_type)
-    for immutable_prop in immutable_props:
-        if immutable_prop in form.form and immutable_prop != entity_type.id_name:
-            flask.abort(
-                400, f'Immutable property {immutable_prop} found in request body',
-            )
-        entity_properties.pop(immutable_prop)
+    for immutable_prop_name in immutable_props:
+        if immutable_prop_name in form.form and immutable_prop_name != entity_type.id_name:
+            flask.abort(400, f'Immutable property {immutable_prop_name} found in request body')
+        entity_properties.pop(immutable_prop_name)
 
     properties_to_update = {
-        k: v for k, v in entity_properties.items() if k in form.form
+        name: type_ for name, type_ in entity_properties.items() if name in form.form
     }
     if len(properties_to_update) <= 0:
         flask.abort(400, 'No attributes to be updated were provided')
 
-    for key, value in properties_to_update.items():
-        query_params = (form.get(key, value), id_)
+    for prop_name, prop_type in properties_to_update.items():
+        query_params = (form.get(prop_name, prop_type), id_)
         cursor.execute(
-            f'UPDATE {entity_type.table_name} SET {key}=? WHERE {entity_type.id_name}=?', query_params,
+            f'UPDATE {entity_type.table_name} SET {prop_name}=? WHERE {entity_type.id_name}=?', query_params,
         )
     conn.commit()
 
@@ -72,9 +92,7 @@ def update(entity_type: Type[models.Model], immutable_props: List[str]) -> Respo
     )
     db_updated_entity = updated_res.fetchone()
     if db_updated_entity is None or len(db_updated_entity) == 0:
-        flask.abort(
-            404, f'{entity_type.__class__.__name__} did not exist after updating',
-        )
+        flask.abort(404, f'{entity_type.__class__.__name__} did not exist after updating')
     updated_entity = entity_type(*db_updated_entity)
     return updated_entity.to_response()
 
