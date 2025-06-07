@@ -264,7 +264,23 @@ Item IDs and creation user/time cannot be updated. Items must be deleted and re-
 <dl class="py function">
 <dt class="sig sig-object py" id="api_item_routes.api_items_count">
 <span class="sig-prename descclassname"><span class="pre">api_item_routes.</span></span><span class="sig-name descname"><span class="pre">api_items_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api_item_routes.api_items_count" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Count the total number of inventory items.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GET</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">items</span><span class="o">/</span><span class="n">count</span>
+</pre></div>
+</div>
+<p>This endpoint does not follow a standard <a class="reference internal" href="models.html#models.Model" title="models.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">models.Model</span></code></a> list format.
+Instead, the count is embedded within the standard response body as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="n">item_count</span> <span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><code class="docutils literal notranslate"><span class="pre">200</span></code> on success with the total item count (see formatting above),</p>
+<p><code class="docutils literal notranslate"><span class="pre">500</span></code> if the item count returned a non-one number of values</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 
