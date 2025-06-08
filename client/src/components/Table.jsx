@@ -54,9 +54,9 @@ const Table = () => {
         { headerName: "Box ID", field: "box_id", flex: 0.7 },
         { headerName: "Quantity", field: "quantity", flex: 0.5 },
         { headerName: "Manufacturer Part Number", field: "mfg_part_number", flex: 1 },
-        { headerName: "DigiKey Part Number", field: "digikey_part_number", flex: 1 },
-        { headerName: "JLCPCB Part Number", field: "jlcpcb_part_number", flex: 1 },
+        { headerName: "Digi-Key Part Number", field: "digikey_part_number", flex: 1 },
         { headerName: "Mouser Part Number", field: "mouser_part_number", flex: 1 },
+        { headerName: "JLCPCB Part Number", field: "jlcpcb_part_number", flex: 1 },
     ]);
 
     const [rowData, setRowData] = useState([]);
